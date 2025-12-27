@@ -81,7 +81,7 @@ body {
 }
 .logo-n-nav img {
   width: 34px;              /* base size */
-  height: 134px;
+  height: 34px;
   object-fit: contain;
   transform: translateY(6px) scale(1.55); /* 🔥 looks bigger, layout safe */
   transform-origin: left center;
