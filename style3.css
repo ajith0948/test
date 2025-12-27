@@ -83,7 +83,7 @@ body {
   width: 34px;              /* base size */
   height: 34px;
   object-fit: contain;
-  transform: translateY(9px) scale(1.55); /* 🔥 looks bigger, layout safe */
+  transform: translateY(6px) scale(1.55); /* 🔥 looks bigger, layout safe */
   transform-origin: left center;
 }
 
