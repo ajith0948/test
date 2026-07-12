@@ -25,9 +25,10 @@ services:
       - key: CLOUDINARY_API_SECRET
         sync: false
       # Comma-separated list of allowed frontend origins (CORS).
-      # Update this to your actual frontend URL after the frontend deploys.
+      # Render appended a suffix to the frontend's name since "assetflow-frontend"
+      # was already taken - this must match the actual deployed frontend URL.
       - key: FRONTEND_URL
-        value: https://assetflow-frontend.onrender.com
+        value: https://assetflow-frontend-3bm9.onrender.com
 
   # ── Frontend: Vite/React static site ───────────────────────────────────────
   - type: web
@@ -37,9 +38,10 @@ services:
     buildCommand: npm install && npm run build
     staticPublishPath: dist
     envVars:
-      # Update this to your actual backend URL after the backend deploys.
+      # Render appended a suffix to the backend's name since "assetflow-backend"
+      # was already taken - this must match the actual deployed backend URL.
       - key: VITE_API_URL
-        value: https://assetflow-backend.onrender.com/api
+        value: https://assetflow-backend-f54m.onrender.com/api
     routes:
       - type: rewrite
         source: /*
