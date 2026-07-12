@@ -193,6 +193,14 @@ const updateAsset = async (req, res) => {
         ];
         const updates = Object.fromEntries(Object.entries(req.body).filter(([key]) => allowedFields.includes(key)));
 
+        // 'department' is an ObjectId ref - an empty string (clearing the
+        // field via a form) fails Mongoose's ObjectId cast, unlike Number/Date
+        // fields which special-case "" as empty. Normalize it the same way
+        // createAsset does.
+        if ('department' in updates && !updates.department) {
+            updates.department = null;
+        }
+
         if ('customFields' in updates) {
             const categoryForCoercion = updates.category || (await Asset.findById(req.params.assetId).select('category'))?.category;
             updates.customFields = await parseCustomFields(updates.customFields, categoryForCoercion);

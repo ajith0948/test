@@ -3,6 +3,7 @@ const Asset = require('../models/Asset');
 const { hasOverlap } = require('../utils/overlapCheck');
 const { notify } = require('../utils/notify');
 const { logActivity } = require('../utils/logActivity');
+const { syncBookingStatuses } = require('../utils/syncBookingStatuses');
 
 // @desc    Book a shared/bookable asset for a time slot
 // @route   POST /api/bookings
@@ -59,6 +60,8 @@ const createBooking = async (req, res) => {
 // @access  Private
 const getBookings = async (req, res) => {
     try {
+        await syncBookingStatuses();
+
         const query = {};
         if (req.query.assetId) query.asset = req.query.assetId;
         if (req.query.status) query.status = req.query.status;

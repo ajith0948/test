@@ -17,6 +17,7 @@ const reportRoutes = require('./routes/reportRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
 const activityLogRoutes = require('./routes/activityLogRoutes');
+const errorHandler = require('./middleware/errorHandler');
 const app = express();
 
 // 2. Security & Middleware
@@ -54,5 +55,8 @@ app.use('/api/logs', activityLogRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/departments', departmentRoutes);
 app.use('/api/categories', categoryRoutes);
+
+// 5. Central JSON error handler - must be registered last, after all routes.
+app.use(errorHandler);
 
 module.exports = app;

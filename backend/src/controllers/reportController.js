@@ -9,6 +9,7 @@ const Allocation = require('../models/Allocation');
 const Booking = require('../models/Booking');
 const MaintenanceRequest = require('../models/MaintenanceRequest');
 const TransferRequest = require('../models/TransferRequest');
+const { syncBookingStatuses } = require('../utils/syncBookingStatuses');
 
 // ─── Dashboard ────────────────────────────────────────────────────────────────
 
@@ -17,6 +18,8 @@ const TransferRequest = require('../models/TransferRequest');
 // @access  Private
 exports.getDashboardKPIs = async (req, res, next) => {
   try {
+    await syncBookingStatuses();
+
     const [assetsAvailable, assetsAllocated, maintenanceToday, activeBookings, pendingTransfers, dueAllocations] =
       await Promise.all([
         Asset.countDocuments({ status: 'Available', isActive: true }),

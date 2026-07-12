@@ -5,8 +5,12 @@ const User = require('../models/User');
 // @access  Private/Admin
 const getUsers = async (req, res) => {
     try {
-        // Exclude Admin — admin is a virtual entity that doesn't live in the DB
-        const users = await User.find({ role: { $ne: 'Admin' } }).select('-password').populate('department', 'name');
+        // Note: the *virtual* admin login (via ADMIN_SECRET) never has a DB
+        // record, so there's nothing to filter out for that reason. Real users
+        // can still be promoted to the 'Admin' role from this directory, so we
+        // must include them here too - otherwise, once promoted, they'd vanish
+        // from this list with no way to demote them back through the UI.
+        const users = await User.find({}).select('-password').populate('department', 'name');
         
         // Map to exact required format: { _id, name, email, department, role, isActive }
         const employees = users.map(user => ({

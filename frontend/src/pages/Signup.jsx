@@ -50,11 +50,21 @@ export default function Signup() {
                         <label className="block mb-1 font-medium">Password</label>
                         <input
                             type="password"
-                            {...register('password', { required: 'Password is required', minLength: { value: 6, message: 'Minimum 6 characters' } })}
+                            {...register('password', {
+                                required: 'Password is required',
+                                pattern: {
+                                    value: /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
+                                    message: 'Must be 8+ characters with a letter, a number, and a special character (@$!%*#?&).',
+                                },
+                            })}
                             className="w-full p-2 border rounded focus:outline-blue-500"
                             placeholder="••••••••"
                         />
-                        {errors.password && <span className="text-sm text-red-500">{errors.password.message}</span>}
+                        {errors.password ? (
+                            <span className="text-sm text-red-500">{errors.password.message}</span>
+                        ) : (
+                            <span className="text-xs text-gray-500">8+ characters, with a letter, a number, and a special character.</span>
+                        )}
                     </div>
 
                     <button type="submit" className="w-full p-2 font-bold text-white bg-blue-600 rounded hover:bg-blue-700">

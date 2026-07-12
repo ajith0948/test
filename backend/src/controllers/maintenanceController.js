@@ -39,15 +39,34 @@ const createRequest = async (req, res) => {
 };
 
 // @desc    List maintenance requests (filterable). ?mine=true restricts to
-//          requests the caller raised.
+//          requests the caller raised. Department Heads (without ?mine=true)
+//          only see requests for assets owned by their own department -
+//          Admin/Asset Manager/Employee see everything (Employee typically
+//          combines this with ?mine=true client-side, but isn't hard-scoped
+//          here since raising a request doesn't require department scoping).
 // @route   GET /api/maintenance
 // @access  Private
 const getMaintenanceRequests = async (req, res) => {
     try {
         const query = {};
         if (req.query.status) query.status = req.query.status;
-        if (req.query.assetId) query.asset = req.query.assetId;
-        if (req.query.mine === 'true') query.raisedBy = req.user._id;
+
+        const wantsMine = req.query.mine === 'true';
+        if (wantsMine) query.raisedBy = req.user._id;
+
+        if (!wantsMine && req.user.role === 'Department Head') {
+            const departmentAssets = await Asset.find({ department: req.user.department }).select('_id');
+            query.asset = { $in: departmentAssets.map((asset) => asset._id) };
+        }
+
+        // A specific assetId filter narrows further, but must stay within
+        // whatever scope was already established above (e.g. a Department
+        // Head can't use ?assetId= to peek at an asset outside their dept).
+        if (req.query.assetId) {
+            query.asset = query.asset
+                ? { $in: query.asset.$in.filter((id) => String(id) === String(req.query.assetId)) }
+                : req.query.assetId;
+        }
 
         const requests = await MaintenanceRequest.find(query)
             .populate('asset', 'name assetTag status')
@@ -71,6 +90,17 @@ const approveRequest = async (req, res) => {
 
         const request = await MaintenanceRequest.findOne({ _id: req.params.id, status: 'Pending' });
         if (!request) return res.status(404).json({ success: false, message: 'A pending maintenance request was not found.' });
+
+        // Department Heads may only approve/reject requests for assets owned
+        // by their own department - mirrors the scoping already applied to
+        // allocation/transfer/return reviews elsewhere in the app.
+        if (req.user.role === 'Department Head') {
+            const requestAsset = await Asset.findById(request.asset).select('department');
+            const sameDept = requestAsset?.department && String(requestAsset.department) === String(req.user.department);
+            if (!sameDept) {
+                return res.status(403).json({ success: false, message: 'This maintenance request is outside your department.' });
+            }
+        }
 
         if (decision === 'Rejected') {
             request.status = 'Rejected';

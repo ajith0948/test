@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import { Navigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import api from '../api/axiosInstance';
 
@@ -8,11 +9,22 @@ export default function OrgSetup() {
     const [departments, setDepartments] = useState([]);
     const [categories, setCategories] = useState([]);
 
+    // Every write here (and the Employee Directory read) is Admin-only on the
+    // backend, so a non-Admin landing on this URL directly would otherwise see
+    // a page full of silently-failing forms. The nav link is already hidden
+    // for non-Admins (see Layout.jsx) - this covers direct navigation too.
+    const isAdmin = localStorage.getItem('userRole') === 'Admin';
+
     // Fetch data when component mounts
     useEffect(() => {
+        if (!isAdmin) return;
         fetchDepartments();
         fetchCategories();
     }, []);
+
+    if (!isAdmin) {
+        return <Navigate to="/dashboard" replace />;
+    }
 
     const fetchDepartments = async () => {
         try {

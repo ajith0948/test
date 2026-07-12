@@ -117,11 +117,12 @@ exports.adminLogin = async (req, res) => {
             { expiresIn: '1h' }
         );
 
-        // Also set cookie for cookie-based checks
+        // Also set cookie for cookie-based checks (same policy as generateToken.js)
+        const isProd = process.env.NODE_ENV === 'production';
         res.cookie('jwt', token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV !== 'development',
-            sameSite: 'strict',
+            secure: isProd,
+            sameSite: isProd ? 'none' : 'lax',
             maxAge: 60 * 60 * 1000,
         });
 
@@ -146,7 +147,13 @@ exports.getMe = async (req, res) => {
     }
 };
 exports.logout = (req, res) => {
-    res.cookie('jwt', '', { httpOnly: true, expires: new Date(0) });
+    const isProd = process.env.NODE_ENV === 'production';
+    res.cookie('jwt', '', {
+        httpOnly: true,
+        secure: isProd,
+        sameSite: isProd ? 'none' : 'lax',
+        expires: new Date(0),
+    });
     res.status(200).json({ message: 'Logged out successfully' });
 };
 
@@ -159,7 +166,10 @@ exports.forgotPassword = async (req, res) => {
         const resetToken = user.getSignedToken('reset');
         await user.save();
 
-        const resetUrl = `http://localhost:5173/reset-password/${resetToken}`;
+        // FRONTEND_URL may be a comma-separated list (see app.js CORS config) -
+        // use the first entry as the canonical link target.
+        const frontendOrigin = (process.env.FRONTEND_URL || 'http://localhost:5173').split(',')[0].trim();
+        const resetUrl = `${frontendOrigin}/reset-password/${resetToken}`;
         const message = `<p>You requested a password reset. Click the link to reset it:</p><a href="${resetUrl}">${resetUrl}</a><p>This link expires in 15 minutes.</p>`;
 
         console.log(`\n🔑 [HACKATHON BYPASS] Password Reset Link: ${resetUrl}\n`);

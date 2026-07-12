@@ -54,9 +54,8 @@ export default function ResourceBooking() {
     const bookableAssets = useMemo(() => assets.filter((asset) => asset.isShared), [assets]);
 
     const kpis = useMemo(() => {
-        const now = new Date();
         const upcoming = bookings.filter((booking) => booking.status === 'Upcoming').length;
-        const ongoing = bookings.filter((booking) => booking.status === 'Upcoming' && new Date(booking.startTime) <= now && new Date(booking.endTime) >= now).length;
+        const ongoing = bookings.filter((booking) => booking.status === 'Ongoing').length;
         const mine = me ? bookings.filter((booking) => booking.bookedBy === me._id).length : 0;
         return { total: bookings.length, upcoming, ongoing, mine };
     }, [bookings, me]);

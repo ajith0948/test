@@ -2,7 +2,7 @@ import StatusBadge from '../common/StatusBadge';
 import { AUDIT_STATUS, AUDIT_RESULT } from '../../utils/constants';
 import { formatDate } from '../../utils/dateFormatter';
 
-export default function AuditDetailModal({ audit, onClose, onUpdateItem, onCloseAudit }) {
+export default function AuditDetailModal({ audit, onClose, onUpdateItem, onCloseAudit, canManage }) {
   if (!audit) return null;
 
   return (
@@ -51,7 +51,7 @@ export default function AuditDetailModal({ audit, onClose, onUpdateItem, onClose
                     <StatusBadge status={item.result} />
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
-                    {audit.status === AUDIT_STATUS.OPEN && (
+                    {audit.status === AUDIT_STATUS.OPEN && canManage && (
                       <select
                         className="border border-slate-200 rounded-lg text-sm p-1.5 text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium bg-white shadow-sm"
                         value={item.result}
@@ -78,7 +78,7 @@ export default function AuditDetailModal({ audit, onClose, onUpdateItem, onClose
           >
             Close Viewer
           </button>
-          {audit.status === AUDIT_STATUS.OPEN && (
+          {audit.status === AUDIT_STATUS.OPEN && canManage && (
             <button
               onClick={() => onCloseAudit(audit.id)}
               className="px-5 py-2.5 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-700 transition-all shadow-sm"

@@ -11,8 +11,14 @@ export default function AssetAudit() {
   const [error, setError] = useState(null);
   const [actionError, setActionError] = useState(null);
   const [selectedAudit, setSelectedAudit] = useState(null);
+  const [role, setRole] = useState(null);
 
   const isMounted = useRef(true);
+
+  // Only Admins and Asset Managers may create/manage audit cycles - the
+  // backend already enforces this (auditRoutes.js), but the button was
+  // showing for Employees too and just 403'ing on click.
+  const canManageAudits = role === 'Admin' || role === 'Asset Manager';
 
   const confirmAction = (message) => {
     return window.confirm(message); // Fallback for mock phase until a custom modal is built
@@ -21,6 +27,11 @@ export default function AssetAudit() {
   useEffect(() => {
     isMounted.current = true;
     fetchAudits();
+    axiosInstance.get('/auth/me').then(({ data }) => {
+      if (isMounted.current) setRole(data.role);
+    }).catch(() => {
+      if (isMounted.current) setRole(null);
+    });
     return () => {
       isMounted.current = false;
     };
@@ -135,12 +146,14 @@ export default function AssetAudit() {
           <h1 className="text-3xl font-bold tracking-tight text-slate-900">Asset Audit</h1>
           <p className="text-slate-500 font-medium mt-1">Manage physical asset verification cycles</p>
         </div>
-        <button
-          onClick={handleCreateAudit}
-          className="px-5 py-2.5 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-700 transition-all shadow-sm"
-        >
-          Create Audit Cycle
-        </button>
+        {canManageAudits && (
+          <button
+            onClick={handleCreateAudit}
+            className="px-5 py-2.5 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-700 transition-all shadow-sm"
+          >
+            Create Audit Cycle
+          </button>
+        )}
       </div>
 
       {actionError && (
@@ -183,6 +196,7 @@ export default function AssetAudit() {
           onClose={() => setSelectedAudit(null)}
           onUpdateItem={handleUpdateItem}
           onCloseAudit={handleCloseAudit}
+          canManage={canManageAudits}
         />
       )}
     </div>
