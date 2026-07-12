@@ -3,6 +3,7 @@ const Allocation = require('../models/Allocation');
 const TransferRequest = require('../models/TransferRequest');
 const AssetCategory = require('../models/AssetCategory');
 const generateAssetTag = require('../utils/generateAssetTag');
+const { logActivity } = require('../utils/logActivity');
 
 const getAttachmentType = (file) => {
     if (file.mimetype?.startsWith('image/')) {
@@ -107,6 +108,13 @@ const createAsset = async (req, res) => {
             isShared,
             customFields: resolvedCustomFields,
             attachments,
+        });
+
+        await logActivity({
+            user: req.user._id,
+            action: `Registered asset ${asset.assetTag} (${asset.name})`,
+            module: 'Asset',
+            metadata: { assetId: asset._id, assetTag: asset.assetTag },
         });
 
         res.status(201).json({

@@ -5,6 +5,7 @@ import StatusBadge from '../components/common/StatusBadge';
 const emptyAllocation = { assetId: '', recipientType: 'employee', recipientId: '', expectedReturnDate: '' };
 const emptyManagerTransfer = { assetId: '', requestedBy: '', recipientType: 'employee', recipientId: '', reason: '' };
 const emptySelfTransfer = { assetId: '', reason: '' };
+const emptyAllocationRequest = { assetId: '', recipientType: 'self', reason: '' };
 
 const inputClass =
     'mt-1.5 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500';
@@ -93,10 +94,13 @@ export default function AllocationTransfer() {
     const [pendingTransfers, setPendingTransfers] = useState([]); // to review
     const [pendingReturns, setPendingReturns] = useState([]); // to review
     const [myTransferRequests, setMyTransferRequests] = useState([]); // submitted by me
+    const [myAllocationRequests, setMyAllocationRequests] = useState([]); // asset requests submitted by me
+    const [pendingAllocationRequests, setPendingAllocationRequests] = useState([]); // asset requests to review
 
     const [allocationForm, setAllocationForm] = useState(emptyAllocation);
     const [managerTransferForm, setManagerTransferForm] = useState(emptyManagerTransfer);
     const [selfTransferForm, setSelfTransferForm] = useState(emptySelfTransfer);
+    const [allocationRequestForm, setAllocationRequestForm] = useState(emptyAllocationRequest);
     const [submitting, setSubmitting] = useState(false);
     const [notice, setNotice] = useState('');
     const [error, setError] = useState('');
@@ -125,14 +129,18 @@ export default function AllocationTransfer() {
                 calls.push(api.get('/allocations', { params: { status: 'Active' } }));
                 calls.push(api.get('/allocations/transfers', { params: { status: 'Requested' } }));
                 calls.push(api.get('/allocations', { params: { status: 'Return Requested' } }));
+                calls.push(api.get('/allocations/requests', { params: { status: 'Requested' } }));
             } else if (isDeptHead) {
                 calls.push(api.get('/allocations', { params: { status: 'Active', mine: true } }));
                 calls.push(api.get('/allocations/transfers', { params: { status: 'Requested' } })); // dept-scoped by backend
                 calls.push(api.get('/allocations', { params: { status: 'Return Requested' } })); // dept-scoped by backend
                 calls.push(api.get('/allocations/transfers', { params: { mine: true } }));
+                calls.push(api.get('/allocations/requests', { params: { status: 'Requested' } })); // dept-scoped by backend
+                calls.push(api.get('/allocations/requests', { params: { mine: true } }));
             } else {
                 calls.push(api.get('/allocations', { params: { status: 'Active', mine: true } }));
                 calls.push(api.get('/allocations/transfers', { params: { mine: true } }));
+                calls.push(api.get('/allocations/requests', { params: { mine: true } }));
             }
 
             const responses = await Promise.all(calls);
@@ -142,14 +150,18 @@ export default function AllocationTransfer() {
                 setMyAllocations(responses[1].data.allocations);
                 setPendingTransfers(responses[2].data.transfers);
                 setPendingReturns(responses[3].data.allocations);
+                setPendingAllocationRequests(responses[4].data.requests);
             } else if (isDeptHead) {
                 setMyAllocations(responses[1].data.allocations);
                 setPendingTransfers(responses[2].data.transfers);
                 setPendingReturns(responses[3].data.allocations);
                 setMyTransferRequests(responses[4].data.transfers);
+                setPendingAllocationRequests(responses[5].data.requests);
+                setMyAllocationRequests(responses[6].data.requests);
             } else {
                 setMyAllocations(responses[1].data.allocations);
                 setMyTransferRequests(responses[2].data.transfers);
+                setMyAllocationRequests(responses[3].data.requests);
             }
         } catch (requestError) {
             setError(requestError.response?.data?.message || 'Could not reach the AssetFlow API.');
@@ -180,6 +192,10 @@ export default function AllocationTransfer() {
     const updateSelfTransferForm = (event) => {
         const { name, value } = event.target;
         setSelfTransferForm((current) => ({ ...current, [name]: value }));
+    };
+    const updateAllocationRequestForm = (event) => {
+        const { name, value } = event.target;
+        setAllocationRequestForm((current) => ({ ...current, [name]: value }));
     };
 
     const allocate = async (event) => {
@@ -276,6 +292,32 @@ export default function AllocationTransfer() {
         }
     };
 
+    const submitAllocationRequest = async (event) => {
+        event.preventDefault();
+        try {
+            await api.post('/allocations/requests', {
+                assetId: allocationRequestForm.assetId,
+                recipientType: allocationRequestForm.recipientType === 'department' ? 'department' : 'self',
+                reason: allocationRequestForm.reason,
+            });
+            setAllocationRequestForm(emptyAllocationRequest);
+            showNotice('Asset request submitted for approval.');
+            loadData();
+        } catch (requestError) {
+            showError(requestError.response?.data?.message || 'Asset request failed.');
+        }
+    };
+
+    const reviewAllocationRequest = async (requestId, decision) => {
+        try {
+            await api.patch(`/allocations/requests/${requestId}/review`, { decision });
+            showNotice(`Asset request ${decision.toLowerCase()}.`);
+            loadData();
+        } catch (requestError) {
+            showError(requestError.response?.data?.message || 'Could not review asset request.');
+        }
+    };
+
     if (loadingMe) {
         return <div className="py-16 text-center text-sm text-slate-500">Loading…</div>;
     }
@@ -353,27 +395,57 @@ export default function AllocationTransfer() {
                 </div>
             )}
 
-            {/* Employee / Department Head: what's mine + request an asset held by someone else */}
+            {/* Employee / Department Head: what's mine + request an asset held by someone else,
+                or request an unowned (Available) asset be assigned to me / my department */}
             {canSelfRequest && (
                 <div className="mb-8 grid gap-6 xl:grid-cols-[380px_1fr]">
-                    <Card title="Request a transfer to me">
-                        <form onSubmit={submitSelfTransfer} className="space-y-4">
-                            <Field label="Allocated asset" required hint="Only assets held by someone else are listed">
-                                <select className={inputClass} name="assetId" value={selfTransferForm.assetId} onChange={updateSelfTransferForm} required>
-                                    <option value="">Select asset</option>
-                                    {requestableAssets.map((asset) => (
-                                        <option key={asset._id} value={asset._id}>{asset.assetTag} — {asset.name}</option>
-                                    ))}
-                                </select>
-                            </Field>
-                            <Field label="Reason">
-                                <textarea className={inputClass} name="reason" value={selfTransferForm.reason} onChange={updateSelfTransferForm} rows="3" placeholder="Why do you need this asset?" />
-                            </Field>
-                            <button type="submit" className="w-full rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700">
-                                Submit for approval
-                            </button>
-                        </form>
-                    </Card>
+                    <div className="space-y-6">
+                        <Card title="Request an available asset">
+                            <form onSubmit={submitAllocationRequest} className="space-y-4">
+                                <Field label="Unowned asset" required hint="Only assets with no current holder are listed">
+                                    <select className={inputClass} name="assetId" value={allocationRequestForm.assetId} onChange={updateAllocationRequestForm} required>
+                                        <option value="">Select asset</option>
+                                        {availableAssets.map((asset) => (
+                                            <option key={asset._id} value={asset._id}>{asset.assetTag} — {asset.name}</option>
+                                        ))}
+                                    </select>
+                                </Field>
+                                {isDeptHead && (
+                                    <Field label="Request for" required>
+                                        <select className={inputClass} name="recipientType" value={allocationRequestForm.recipientType} onChange={updateAllocationRequestForm}>
+                                            <option value="self">Myself</option>
+                                            <option value="department">My department</option>
+                                        </select>
+                                    </Field>
+                                )}
+                                <Field label="Reason">
+                                    <textarea className={inputClass} name="reason" value={allocationRequestForm.reason} onChange={updateAllocationRequestForm} rows="3" placeholder="Why do you need this asset?" />
+                                </Field>
+                                <button type="submit" className="w-full rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700">
+                                    Submit for approval
+                                </button>
+                            </form>
+                        </Card>
+
+                        <Card title="Request a transfer to me">
+                            <form onSubmit={submitSelfTransfer} className="space-y-4">
+                                <Field label="Allocated asset" required hint="Only assets held by someone else are listed">
+                                    <select className={inputClass} name="assetId" value={selfTransferForm.assetId} onChange={updateSelfTransferForm} required>
+                                        <option value="">Select asset</option>
+                                        {requestableAssets.map((asset) => (
+                                            <option key={asset._id} value={asset._id}>{asset.assetTag} — {asset.name}</option>
+                                        ))}
+                                    </select>
+                                </Field>
+                                <Field label="Reason">
+                                    <textarea className={inputClass} name="reason" value={selfTransferForm.reason} onChange={updateSelfTransferForm} rows="3" placeholder="Why do you need this asset?" />
+                                </Field>
+                                <button type="submit" className="w-full rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700">
+                                    Submit for approval
+                                </button>
+                            </form>
+                        </Card>
+                    </div>
 
                     <div className="space-y-6">
                         <ListCard title="My active allocations" empty={myAllocations.length === 0 && <EmptyState title="Nothing allocated to you" text="Assets given to you will show up here." />}>
@@ -390,6 +462,22 @@ export default function AllocationTransfer() {
                                         <button type="button" className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50" onClick={() => requestReturn(allocation._id)}>
                                             Request return
                                         </button>
+                                    </Row>
+                                );
+                            })}
+                        </ListCard>
+
+                        <ListCard title="My asset requests" empty={myAllocationRequests.length === 0 && <EmptyState title="No requests yet" text="Unowned assets you request will show up here." />}>
+                            {myAllocationRequests.map((request) => {
+                                const asset = assetById.get(request.asset);
+                                return (
+                                    <Row key={request._id}>
+                                        <div>
+                                            <p className="font-semibold text-slate-800">{asset?.name || request.asset}</p>
+                                            <p className="mt-1 text-sm text-slate-500">For {request.department ? 'my department' : 'myself'}</p>
+                                            {request.reason && <p className="mt-1 text-sm text-slate-500">{request.reason}</p>}
+                                        </div>
+                                        <StatusBadge value={request.status} />
                                     </Row>
                                 );
                             })}
@@ -456,6 +544,27 @@ export default function AllocationTransfer() {
             {/* Asset Manager / Admin (org-wide) and Department Head (dept-scoped) reviews */}
             {canReview && (
                 <div className="grid gap-6 xl:grid-cols-2">
+                    <ListCard title={isDeptHead ? 'Asset request approvals (your department)' : 'Asset request approvals'} empty={pendingAllocationRequests.length === 0 && <EmptyState title="No asset requests" text="Requests for unowned assets will appear here." />}>
+                        {pendingAllocationRequests.map((request) => {
+                            const asset = assetById.get(request.asset);
+                            return (
+                                <Row key={request._id}>
+                                    <div>
+                                        <div className="flex items-center gap-2">
+                                            <span className="font-medium text-slate-800">{asset?.name || request.asset}</span>
+                                            <StatusBadge value={request.status} />
+                                        </div>
+                                        <p className="mt-2 text-sm text-slate-600">
+                                            For: <span className="font-mono text-xs">{request.employee || request.department}</span>
+                                        </p>
+                                        {request.reason && <p className="mt-1 text-xs text-slate-500">{request.reason}</p>}
+                                    </div>
+                                    <ReviewButtons onReject={() => reviewAllocationRequest(request._id, 'Rejected')} onApprove={() => reviewAllocationRequest(request._id, 'Approved')} />
+                                </Row>
+                            );
+                        })}
+                    </ListCard>
+
                     <ListCard title={isDeptHead ? 'Transfer approvals (your department)' : 'Transfer approvals'} empty={pendingTransfers.length === 0 && <EmptyState title="No transfer requests" text="Requests for currently held assets will appear here." />}>
                         {pendingTransfers.map((transfer) => {
                             const asset = assetById.get(transfer.asset);

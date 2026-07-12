@@ -8,6 +8,9 @@ const {
     createTransferRequest,
     getTransferRequests,
     reviewTransferRequest,
+    createAllocationRequest,
+    getAllocationRequests,
+    reviewAllocationRequest,
 } = require('../controllers/allocationController');
 const { protect, authorizeRoles } = require('../middleware/authMiddleware');
 
@@ -20,6 +23,13 @@ router.post('/:allocationId/return-request', protect, requestReturn);
 
 router.get('/transfers', protect, getTransferRequests);
 router.post('/transfers', protect, createTransferRequest);
+
+// Self-service request for a currently unowned (Available) asset - the
+// counterpart to the manager-driven POST / above. Employees may only request
+// for themselves; Department Heads may request for themselves or their dept.
+router.get('/requests', protect, getAllocationRequests);
+router.post('/requests', protect, authorizeRoles('Employee', 'Department Head'), createAllocationRequest);
+router.patch('/requests/:requestId/review', protect, authorizeRoles('Admin', 'Asset Manager', 'Department Head'), reviewAllocationRequest);
 
 // Only Admins and Asset Managers can directly return assets (bypasses approval)
 router.patch('/:allocationId/return', protect, authorizeRoles('Admin', 'Asset Manager'), returnAllocation);

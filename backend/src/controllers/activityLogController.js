@@ -1,24 +1,25 @@
 /**
- * Activity Log Controller (Owned by Member 4 - Likitha)
+ * Activity Log Controller
  *
- * Handles fetching activity logs.
- * Currently uses mock data.
+ * Real DB-backed implementation (formerly mock-backed - see ActivityLog model
+ * and utils/logActivity.js, which other controllers call to write these).
  */
-const mockHelper = require('../utils/activityLogMocks');
+const ActivityLog = require('../models/ActivityLog');
 
+// @desc    Get activity logs, optionally filtered by module, newest first
+// @route   GET /api/logs?module=Asset|Allocation|Booking|Maintenance|Audit
+// @access  Private
 exports.getActivityLogs = async (req, res, next) => {
   try {
     const { module } = req.query;
+    const filter = module && module !== 'All' ? { module } : {};
 
-    // TODO (Phase 4):
-    // const filter = req.query.module && req.query.module !== 'All' ? { module: req.query.module } : {};
-    // const logs = await ActivityLog.find(filter)
-    //   .populate('user', 'name email')
-    //   .sort({ createdAt: -1 });
-    // return res.status(200).json(logs);
+    const logs = await ActivityLog.find(filter)
+      .populate('user', 'name email')
+      .sort({ createdAt: -1 })
+      .limit(200);
 
-    const data = await mockHelper.getMockLogs(module);
-    res.status(200).json(data);
+    res.status(200).json(logs);
   } catch (error) {
     next(error);
   }

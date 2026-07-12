@@ -94,8 +94,38 @@ export default function AssetAudit() {
     }
   };
 
-  const handleCreateMockAudit = () => {
-    if (isMounted.current) setActionError(UI_MESSAGES.AUDIT_CREATE_MOCK);
+  const handleCreateAudit = async () => {
+    if (isMounted.current) setActionError(null);
+
+    const name = window.prompt('Audit cycle name (e.g. "Q3 Electronics Audit"):');
+    if (!name) return;
+
+    const scopeType = window.prompt('Scope - type one of: Organization, Department, Location', 'Organization');
+    if (!scopeType || !['Organization', 'Department', 'Location'].includes(scopeType)) {
+      setActionError('Scope must be exactly "Organization", "Department", or "Location".');
+      return;
+    }
+
+    let scopeValue = 'All';
+    if (scopeType === 'Department') {
+      scopeValue = window.prompt('Department ID (Mongo ObjectId) to audit:');
+    } else if (scopeType === 'Location') {
+      scopeValue = window.prompt('Location (must match asset location exactly):');
+    }
+    if (!scopeValue) return;
+
+    const startDate = window.prompt('Start date (YYYY-MM-DD):', new Date().toISOString().slice(0, 10));
+    const endDate = window.prompt('End date (YYYY-MM-DD):');
+    if (!startDate || !endDate) return;
+
+    try {
+      await axiosInstance.post('/audits', { name, scopeType, scopeValue, startDate, endDate });
+      await fetchAudits();
+    } catch (err) {
+      if (isMounted.current) {
+        setActionError(err.response?.data?.message || 'Failed to create audit cycle.');
+      }
+    }
   };
 
   return (
@@ -106,7 +136,7 @@ export default function AssetAudit() {
           <p className="text-slate-500 font-medium mt-1">Manage physical asset verification cycles</p>
         </div>
         <button
-          onClick={handleCreateMockAudit}
+          onClick={handleCreateAudit}
           className="px-5 py-2.5 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-700 transition-all shadow-sm"
         >
           Create Audit Cycle

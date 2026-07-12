@@ -21,7 +21,18 @@ const app = express();
 
 // 2. Security & Middleware
 app.use(helmet());
-app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
+// Accept a comma-separated FRONTEND_URL env var so both local dev
+// (http://localhost:5173) and the deployed Render static site can hit the API.
+const allowedOrigins = (process.env.FRONTEND_URL || 'http://localhost:5173')
+    .split(',')
+    .map((origin) => origin.trim());
+app.use(cors({
+    origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+        callback(new Error('Not allowed by CORS'));
+    },
+    credentials: true,
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());

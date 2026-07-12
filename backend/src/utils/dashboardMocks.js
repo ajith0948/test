@@ -1,3 +1,5 @@
+// NOT USED - superseded by real Mongoose aggregate queries in
+// controllers/reportController.js (getDashboardKPIs). This file can be deleted.
 /**
  * Dashboard Mock Data (Owned by Member 4 - Likitha)
  * Phase 4: Replace with MongoDB aggregate queries across Asset, Allocation, Booking, and MaintenanceRequest.

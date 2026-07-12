@@ -1,0 +1,46 @@
+services:
+  # ── Backend: Node/Express API ──────────────────────────────────────────────
+  - type: web
+    name: assetflow-backend
+    env: node
+    rootDir: backend
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: MONGO_URI
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: EMAIL_USER
+        sync: false
+      - key: EMAIL_PASS
+        sync: false
+      - key: ADMIN_SECRET
+        sync: false
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+      # Comma-separated list of allowed frontend origins (CORS).
+      # Update this to your actual frontend URL after the frontend deploys.
+      - key: FRONTEND_URL
+        value: https://assetflow-frontend.onrender.com
+
+  # ── Frontend: Vite/React static site ───────────────────────────────────────
+  - type: web
+    name: assetflow-frontend
+    env: static
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    envVars:
+      # Update this to your actual backend URL after the backend deploys.
+      - key: VITE_API_URL
+        value: https://assetflow-backend.onrender.com/api
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html

@@ -1,6 +1,8 @@
 const Booking = require('../models/Booking');
 const Asset = require('../models/Asset');
 const { hasOverlap } = require('../utils/overlapCheck');
+const { notify } = require('../utils/notify');
+const { logActivity } = require('../utils/logActivity');
 
 // @desc    Book a shared/bookable asset for a time slot
 // @route   POST /api/bookings
@@ -32,6 +34,20 @@ const createBooking = async (req, res) => {
             endTime,
             purpose,
         });
+
+        await notify({
+            user: req.user._id,
+            type: 'BookingConfirmed',
+            message: `Your booking for ${asset.name} (${asset.assetTag}) is confirmed.`,
+            relatedEntity: booking._id.toString(),
+        });
+        await logActivity({
+            user: req.user._id,
+            action: `Booked ${asset.name} (${asset.assetTag})`,
+            module: 'Booking',
+            metadata: { bookingId: booking._id, assetId: asset._id },
+        });
+
         res.status(201).json({ success: true, message: 'Booking confirmed.', booking });
     } catch (error) {
         res.status(400).json({ success: false, message: error.message });
@@ -78,6 +94,21 @@ const cancelBooking = async (req, res) => {
         booking.status = 'Cancelled';
         booking.cancelledAt = new Date();
         await booking.save();
+
+        const asset = await Asset.findById(booking.asset).select('name assetTag');
+        await notify({
+            user: booking.bookedBy,
+            type: 'BookingCancelled',
+            message: `Your booking for ${asset?.name || 'an asset'} was cancelled.`,
+            relatedEntity: booking._id.toString(),
+        });
+        await logActivity({
+            user: req.user._id,
+            action: `Cancelled booking for ${asset?.name || booking.asset}`,
+            module: 'Booking',
+            metadata: { bookingId: booking._id },
+        });
+
         res.json({ success: true, message: 'Booking cancelled.', booking });
     } catch (error) {
         res.status(400).json({ success: false, message: error.message });

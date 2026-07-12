@@ -1,3 +1,5 @@
+// NOT USED - superseded by real Mongoose aggregate queries in
+// controllers/reportController.js. This file can be deleted.
 /**
  * Report Mock Data (Owned by Member 4 - Likitha)
  * Phase 4: Replace each function body with the corresponding Mongoose aggregation pipeline.

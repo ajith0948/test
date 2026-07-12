@@ -1,3 +1,5 @@
+// NOT USED - superseded by the real ActivityLog model + controllers/activityLogController.js.
+// This file can be deleted.
 /**
  * Activity Log Mock Data (Owned by Member 4 - Likitha)
  * Phase 4: Replace with Mongoose calls `ActivityLog.find(...)`.

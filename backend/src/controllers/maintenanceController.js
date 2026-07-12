@@ -1,6 +1,8 @@
 const MaintenanceRequest = require('../models/MaintenanceRequest');
 const Asset = require('../models/Asset');
 const Allocation = require('../models/Allocation');
+const { notify } = require('../utils/notify');
+const { logActivity } = require('../utils/logActivity');
 
 // @desc    Raise a maintenance request for an asset
 // @route   POST /api/maintenance
@@ -22,6 +24,14 @@ const createRequest = async (req, res) => {
             priority,
             photo,
         });
+
+        await logActivity({
+            user: req.user._id,
+            action: `Raised maintenance request for ${asset.name} (${asset.assetTag})`,
+            module: 'Maintenance',
+            metadata: { maintenanceId: request._id, priority: request.priority },
+        });
+
         res.status(201).json({ success: true, message: 'Maintenance request raised successfully.', request });
     } catch (error) {
         res.status(400).json({ success: false, message: error.message });
@@ -67,6 +77,21 @@ const approveRequest = async (req, res) => {
             request.approvedBy = req.user._id;
             request.rejectionReason = rejectionReason;
             await request.save();
+
+            const rejectedAsset = await Asset.findById(request.asset).select('name assetTag');
+            await notify({
+                user: request.raisedBy,
+                type: 'MaintenanceRejected',
+                message: `Your maintenance request for ${rejectedAsset?.name || 'an asset'} was rejected.${rejectionReason ? ` Reason: ${rejectionReason}` : ''}`,
+                relatedEntity: request._id.toString(),
+            });
+            await logActivity({
+                user: req.user._id,
+                action: `Rejected maintenance request for ${rejectedAsset?.name || request.asset}`,
+                module: 'Maintenance',
+                metadata: { maintenanceId: request._id },
+            });
+
             return res.json({ success: true, message: 'Maintenance request rejected.', request });
         }
 
@@ -76,6 +101,20 @@ const approveRequest = async (req, res) => {
         await request.save();
 
         const asset = await Asset.findByIdAndUpdate(request.asset, { status: 'Under Maintenance' }, { new: true });
+
+        await notify({
+            user: request.raisedBy,
+            type: 'MaintenanceApproved',
+            message: `Your maintenance request for ${asset?.name || 'an asset'} (${asset?.assetTag || ''}) was approved.`,
+            relatedEntity: request._id.toString(),
+        });
+        await logActivity({
+            user: req.user._id,
+            action: `Approved maintenance request for ${asset?.name || request.asset}`,
+            module: 'Maintenance',
+            metadata: { maintenanceId: request._id },
+        });
+
         res.json({ success: true, message: 'Maintenance request approved.', request, asset });
     } catch (error) {
         res.status(400).json({ success: false, message: error.message });
@@ -107,6 +146,20 @@ const resolveRequest = async (req, res) => {
             { status: activeAllocation ? 'Allocated' : 'Available' },
             { new: true }
         );
+
+        await notify({
+            user: request.raisedBy,
+            type: 'MaintenanceResolved',
+            message: `Maintenance on ${asset?.name || 'an asset'} (${asset?.assetTag || ''}) is complete.`,
+            relatedEntity: request._id.toString(),
+        });
+        await logActivity({
+            user: req.user._id,
+            action: `Resolved maintenance request for ${asset?.name || request.asset}`,
+            module: 'Maintenance',
+            metadata: { maintenanceId: request._id },
+        });
+
         res.json({ success: true, message: 'Maintenance request resolved.', request, asset });
     } catch (error) {
         res.status(400).json({ success: false, message: error.message });

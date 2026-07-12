@@ -1,3 +1,5 @@
+// NOT USED - superseded by the real Notification model + controllers/notificationController.js.
+// This file can be deleted.
 /**
  * Notification Mock Data (Owned by Member 4 - Likitha)
  *
