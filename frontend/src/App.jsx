@@ -7,6 +7,13 @@ import OrgSetup from './pages/OrgSetup';
 import Layout from './components/Layout';
 import AssetDirectory from './pages/AssetDirectory';
 import AllocationTransfer from './pages/AllocationTransfer';
+import ResourceBooking from './pages/ResourceBooking';
+import Maintenance from './pages/Maintenance';
+import Dashboard from './pages/Dashboard';
+import AssetAudit from './pages/AssetAudit';
+import Reports from './pages/Reports';
+import ActivityLogs from './pages/ActivityLogs';
+import Notifications from './pages/Notifications';
 
 function App() {
     return (
@@ -27,11 +34,13 @@ function App() {
                     by AssetDirectory, which matches the current backend contract. */}
                 <Route path="/assets" element={<AssetDirectory />} />
                 <Route path="/allocations" element={<AllocationTransfer />} />
-                <Route path="/dashboard" element={
-                    <div className="text-3xl font-bold text-gray-600 flex justify-center mt-20">
-                        Dashboard KPIs coming in Hour 7...
-                    </div>
-                } />
+                <Route path="/bookings" element={<ResourceBooking />} />
+                <Route path="/maintenance" element={<Maintenance />} />
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/audit" element={<AssetAudit />} />
+                <Route path="/reports" element={<Reports />} />
+                <Route path="/activity-logs" element={<ActivityLogs />} />
+                <Route path="/notifications" element={<Notifications />} />
             </Route>
         </Routes>
     );

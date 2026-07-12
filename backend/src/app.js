@@ -10,6 +10,13 @@ const categoryRoutes = require('./routes/categoryRoutes');
 const userRoutes = require('./routes/userRoutes');
 const assetRoutes = require('./routes/assetRoutes');
 const allocationRoutes = require('./routes/allocationRoutes');
+const bookingRoutes = require('./routes/bookingRoutes');
+const maintenanceRoutes = require('./routes/maintenanceRoutes');
+const auditRoutes = require('./routes/auditRoutes');
+const reportRoutes = require('./routes/reportRoutes');
+const dashboardRoutes = require('./routes/dashboardRoutes');
+const notificationRoutes = require('./routes/notificationRoutes');
+const activityLogRoutes = require('./routes/activityLogRoutes');
 const app = express();
 
 // 2. Security & Middleware
@@ -25,6 +32,13 @@ app.get('/api/health', (req, res) => {
 });
 app.use('/api/assets', assetRoutes);
 app.use('/api/allocations', allocationRoutes);
+app.use('/api/bookings', bookingRoutes);
+app.use('/api/maintenance', maintenanceRoutes);
+app.use('/api/audits', auditRoutes);
+app.use('/api/reports', reportRoutes);
+app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/notifications', notificationRoutes);
+app.use('/api/logs', activityLogRoutes);
 // 4. Mount Routes (Mounted strictly ONCE)
 app.use('/api/auth', authRoutes);
 app.use('/api/departments', departmentRoutes);
