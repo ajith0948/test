@@ -29,15 +29,15 @@ export const NOTIFICATION_TYPES = {
 };
 
 export const NOTIFICATION_CONFIG = {
-  [NOTIFICATION_TYPES.ASSET_ASSIGNED]:       { icon: 'A', bgClass: 'bg-green-100 text-green-600' },
-  [NOTIFICATION_TYPES.TRANSFER_APPROVED]:    { icon: 'T', bgClass: 'bg-green-100 text-green-600' },
-  [NOTIFICATION_TYPES.BOOKING_CONFIRMED]:    { icon: 'B', bgClass: 'bg-green-100 text-green-600' },
-  [NOTIFICATION_TYPES.MAINTENANCE_APPROVED]: { icon: 'M', bgClass: 'bg-green-100 text-green-600' },
-  [NOTIFICATION_TYPES.OVERDUE_RETURN]:       { icon: 'O', bgClass: 'bg-red-100 text-red-600' },
-  [NOTIFICATION_TYPES.AUDIT_DISCREPANCY]:    { icon: 'D', bgClass: 'bg-red-100 text-red-600' },
-  [NOTIFICATION_TYPES.MAINTENANCE_REJECTED]: { icon: 'M', bgClass: 'bg-red-100 text-red-600' },
-  [NOTIFICATION_TYPES.BOOKING_CANCELLED]:    { icon: 'B', bgClass: 'bg-red-100 text-red-600' },
-  [NOTIFICATION_TYPES.BOOKING_REMINDER]:     { icon: 'R', bgClass: 'bg-blue-100 text-blue-600' }
+  [NOTIFICATION_TYPES.ASSET_ASSIGNED]:       { icon: 'A', bgClass: 'bg-emerald-50 text-emerald-700' },
+  [NOTIFICATION_TYPES.TRANSFER_APPROVED]:    { icon: 'T', bgClass: 'bg-emerald-50 text-emerald-700' },
+  [NOTIFICATION_TYPES.BOOKING_CONFIRMED]:    { icon: 'B', bgClass: 'bg-emerald-50 text-emerald-700' },
+  [NOTIFICATION_TYPES.MAINTENANCE_APPROVED]: { icon: 'M', bgClass: 'bg-emerald-50 text-emerald-700' },
+  [NOTIFICATION_TYPES.OVERDUE_RETURN]:       { icon: 'O', bgClass: 'bg-rose-50 text-rose-700' },
+  [NOTIFICATION_TYPES.AUDIT_DISCREPANCY]:    { icon: 'D', bgClass: 'bg-rose-50 text-rose-700' },
+  [NOTIFICATION_TYPES.MAINTENANCE_REJECTED]: { icon: 'M', bgClass: 'bg-rose-50 text-rose-700' },
+  [NOTIFICATION_TYPES.BOOKING_CANCELLED]:    { icon: 'B', bgClass: 'bg-rose-50 text-rose-700' },
+  [NOTIFICATION_TYPES.BOOKING_REMINDER]:     { icon: 'R', bgClass: 'bg-brand-50 text-brand-700' }
 };
 
 export const UI_MESSAGES = {

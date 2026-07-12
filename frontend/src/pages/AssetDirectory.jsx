@@ -8,9 +8,6 @@ import AssetForm from '../components/assets/AssetForm';
 
 const STATUS_OPTIONS = ['Available', 'Allocated', 'Reserved', 'Under Maintenance', 'Lost', 'Retired', 'Disposed'];
 
-const inputClass =
-    'rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500';
-
 export default function AssetDirectory() {
     const [assets, setAssets] = useState([]);
     const [allocations, setAllocations] = useState([]);
@@ -105,23 +102,19 @@ export default function AssetDirectory() {
         <div>
             <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
                 <div>
-                    <p className="text-xs font-semibold uppercase tracking-wide text-indigo-600">Core asset management</p>
-                    <h1 className="text-2xl font-bold text-slate-900">Asset directory</h1>
-                    <p className="mt-1 text-sm text-slate-500">Register, locate, and monitor every physical asset.</p>
+                    <p className="page-eyebrow">Core asset management</p>
+                    <h1 className="page-title">Asset directory</h1>
+                    <p className="page-subtitle">Register, locate, and monitor every physical asset.</p>
                 </div>
                 {canRegisterAsset && (
-                    <button
-                        type="button"
-                        className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
-                        onClick={() => setShowRegistration(true)}
-                    >
+                    <button type="button" className="btn-primary" onClick={() => setShowRegistration(true)}>
                         + Register asset
                     </button>
                 )}
             </div>
 
-            {notice && <div className="mb-5 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">{notice}</div>}
-            {error && <div className="mb-5 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">{error}</div>}
+            {notice && <div className="mb-5 rounded-md border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">{notice}</div>}
+            {error && <div className="mb-5 rounded-md border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">{error}</div>}
 
             <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
                 <KPICard label="Total assets" value={kpis.total} />
@@ -132,12 +125,12 @@ export default function AssetDirectory() {
 
             <div className="mb-4 grid gap-3 sm:grid-cols-[1fr_200px]">
                 <input
-                    className={inputClass}
+                    className="field-input"
                     value={search}
                     onChange={(event) => setSearch(event.target.value)}
                     placeholder="Search name, asset tag or serial number"
                 />
-                <select className={inputClass} value={status} onChange={(event) => setStatus(event.target.value)}>
+                <select className="field-input" value={status} onChange={(event) => setStatus(event.target.value)}>
                     <option value="">All lifecycle states</option>
                     {STATUS_OPTIONS.map((item) => <option key={item}>{item}</option>)}
                 </select>

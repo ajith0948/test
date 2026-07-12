@@ -1,3 +1,93 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+    html {
+        font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+    }
+
+    body {
+        @apply bg-slate-50 text-slate-800 antialiased;
+    }
+
+    ::selection {
+        @apply bg-brand-200 text-brand-900;
+    }
+
+    /* Thin, unobtrusive scrollbars - most ERPs don't ship OS-default chunky bars */
+    ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+        @apply rounded-full bg-slate-300;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+        @apply bg-slate-400;
+    }
+}
+
+@layer components {
+    /* Page chrome ------------------------------------------------------- */
+    .page-eyebrow {
+        @apply text-xs font-semibold uppercase tracking-wide text-brand-600;
+    }
+    .page-title {
+        @apply text-xl font-semibold text-slate-900;
+    }
+    .page-subtitle {
+        @apply mt-1 text-sm text-slate-500;
+    }
+
+    /* Surfaces ------------------------------------------------------------ */
+    .card {
+        @apply rounded-lg border border-slate-200 bg-white shadow-card;
+    }
+
+    /* Buttons -------------------------------------------------------------
+       Flat, formal, no gradients/glow. One primary, one secondary, one
+       destructive - reused everywhere instead of bespoke button styling. */
+    .btn {
+        @apply inline-flex items-center justify-center gap-1.5 rounded-md px-3.5 py-2 text-sm font-medium
+               transition-colors disabled:cursor-not-allowed disabled:opacity-50;
+    }
+    .btn-primary {
+        @apply btn bg-brand-700 text-white hover:bg-brand-800;
+    }
+    .btn-secondary {
+        @apply btn border border-slate-300 bg-white text-slate-700 hover:bg-slate-50;
+    }
+    .btn-danger {
+        @apply btn border border-rose-200 bg-white text-rose-700 hover:bg-rose-50;
+    }
+    .btn-danger-solid {
+        @apply btn bg-rose-600 text-white hover:bg-rose-700;
+    }
+
+    /* Form controls --------------------------------------------------- */
+    .field-label {
+        @apply mb-1.5 block text-sm font-medium text-slate-700;
+    }
+    .field-input {
+        @apply w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900
+               placeholder:text-slate-400 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500;
+    }
+    .field-error {
+        @apply mt-1 text-xs font-medium text-rose-600;
+    }
+
+    /* Tabs (Reports, Org Setup) ----------------------------------------- */
+    .tab-btn {
+        @apply border-b-2 px-4 py-2.5 text-sm font-medium transition-colors;
+    }
+    .tab-btn-active {
+        @apply tab-btn border-brand-600 text-brand-700;
+    }
+    .tab-btn-inactive {
+        @apply tab-btn border-transparent text-slate-500 hover:text-slate-700;
+    }
+}

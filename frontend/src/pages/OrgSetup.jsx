@@ -3,6 +3,13 @@ import { useForm } from 'react-hook-form';
 import { Navigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import api from '../api/axiosInstance';
+import StatusBadge from '../components/common/StatusBadge';
+
+const TABS = [
+    { key: 'departments', label: 'Departments' },
+    { key: 'categories', label: 'Asset Categories' },
+    { key: 'employees', label: 'Employee Directory' },
+];
 
 export default function OrgSetup() {
     const [activeTab, setActiveTab] = useState('departments');
@@ -45,33 +52,28 @@ export default function OrgSetup() {
     };
 
     return (
-        <div className="max-w-6xl mx-auto bg-white rounded-lg shadow-md overflow-hidden">
-            <div className="border-b bg-gray-50 flex">
-                <button
-                    onClick={() => setActiveTab('departments')}
-                    className={`px-6 py-4 font-semibold ${activeTab === 'departments' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-600'}`}
-                >
-                    Departments
-                </button>
-                <button
-                    onClick={() => setActiveTab('categories')}
-                    className={`px-6 py-4 font-semibold ${activeTab === 'categories' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-600'}`}
-                >
-                    Asset Categories
-                </button>
-                <button
-                    onClick={() => setActiveTab('employees')}
-                    className={`px-6 py-4 font-semibold ${activeTab === 'employees' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-600'}`}
-                >
-                    Employee Directory
-                </button>
+        <div className="max-w-6xl mx-auto">
+            <div className="mb-6">
+                <p className="page-eyebrow">Administration</p>
+                <h1 className="page-title">Organization setup</h1>
+                <p className="page-subtitle">Manage departments, asset categories, and employee access.</p>
             </div>
 
-            <div className="p-6">
-                {activeTab === 'departments' && <DepartmentTab departments={departments} refresh={fetchDepartments} />}
-                {activeTab === 'categories' && <CategoryTab categories={categories} refresh={fetchCategories} />}
-                {activeTab === 'employees' && <EmployeeTab departments={departments} />}
+            <div className="mb-6 flex gap-1 border-b border-slate-200">
+                {TABS.map((tab) => (
+                    <button
+                        key={tab.key}
+                        onClick={() => setActiveTab(tab.key)}
+                        className={activeTab === tab.key ? 'tab-btn-active' : 'tab-btn-inactive'}
+                    >
+                        {tab.label}
+                    </button>
+                ))}
             </div>
+
+            {activeTab === 'departments' && <DepartmentTab departments={departments} refresh={fetchDepartments} />}
+            {activeTab === 'categories' && <CategoryTab categories={categories} refresh={fetchCategories} />}
+            {activeTab === 'employees' && <EmployeeTab departments={departments} />}
         </div>
     );
 }
@@ -93,46 +95,44 @@ function DepartmentTab({ departments, refresh }) {
     };
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="md:col-span-1 bg-gray-50 p-4 rounded border">
-                <h3 className="font-bold mb-4 text-lg">Add Department</h3>
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+            <div className="card p-5 md:col-span-1">
+                <h3 className="mb-4 text-sm font-semibold text-slate-900">Add department</h3>
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                     <div>
-                        <label className="block text-sm font-medium mb-1">Department Name</label>
-                        <input {...register('name', { required: true })} className="w-full p-2 border rounded" placeholder="e.g. IT Support" />
+                        <label className="field-label">Department name</label>
+                        <input {...register('name', { required: true })} className="field-input" placeholder="e.g. IT Support" />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium mb-1">Status</label>
-                        <select {...register('status')} className="w-full p-2 border rounded">
+                        <label className="field-label">Status</label>
+                        <select {...register('status')} className="field-input">
                             <option value="Active">Active</option>
                             <option value="Inactive">Inactive</option>
                         </select>
                     </div>
-                    <button type="submit" className="w-full bg-blue-600 text-white font-bold py-2 rounded hover:bg-blue-700">Create</button>
+                    <button type="submit" className="btn-primary w-full">Create</button>
                 </form>
             </div>
 
             <div className="md:col-span-2">
-                <h3 className="font-bold mb-4 text-lg">Active Departments</h3>
-                <div className="overflow-x-auto border rounded">
-                    <table className="w-full text-left bg-white">
-                        <thead className="bg-gray-100 border-b">
+                <h3 className="mb-3 text-sm font-semibold text-slate-900">Active departments</h3>
+                <div className="card overflow-x-auto">
+                    <table className="w-full text-left text-sm">
+                        <thead className="bg-slate-50">
                             <tr>
-                                <th className="p-3">Name</th>
-                                <th className="p-3">Status</th>
+                                <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-slate-500">Name</th>
+                                <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-slate-500">Status</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody className="divide-y divide-slate-100">
                             {departments.length === 0 ? (
-                                <tr><td colSpan="2" className="p-4 text-center text-gray-500">No departments found.</td></tr>
+                                <tr><td colSpan="2" className="px-4 py-8 text-center text-sm text-slate-500">No departments found.</td></tr>
                             ) : (
                                 departments.map(dept => (
-                                    <tr key={dept._id} className="border-b hover:bg-gray-50">
-                                        <td className="p-3 font-medium">{dept.name}</td>
-                                        <td className="p-3">
-                                            <span className={`px-2 py-1 rounded text-xs font-bold ${dept.isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-                                                {dept.isActive ? 'Active' : 'Inactive'}
-                                            </span>
+                                    <tr key={dept._id} className="hover:bg-slate-50/80">
+                                        <td className="px-4 py-3 font-medium text-slate-800">{dept.name}</td>
+                                        <td className="px-4 py-3">
+                                            <StatusBadge value={dept.isActive ? 'Active' : 'Inactive'} />
                                         </td>
                                     </tr>
                                 ))
@@ -187,32 +187,32 @@ function CategoryTab({ categories, refresh }) {
     };
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="md:col-span-1 bg-gray-50 p-4 rounded border">
-                <h3 className="font-bold mb-4 text-lg">Add Category</h3>
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+            <div className="card p-5 md:col-span-1">
+                <h3 className="mb-4 text-sm font-semibold text-slate-900">Add category</h3>
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                     <div>
-                        <label className="block text-sm font-medium mb-1">Category Name</label>
-                        <input {...register('name', { required: true })} className="w-full p-2 border rounded" placeholder="e.g. Laptops" />
+                        <label className="field-label">Category name</label>
+                        <input {...register('name', { required: true })} className="field-input" placeholder="e.g. Laptops" />
                     </div>
 
-                    <div className="border-t pt-4">
-                        <label className="block text-sm font-medium mb-1">Custom Fields</label>
-                        <p className="text-xs text-gray-500 mb-2">
+                    <div className="border-t border-slate-100 pt-4">
+                        <label className="field-label">Custom fields</label>
+                        <p className="mb-2 text-xs text-slate-500">
                             Extra fields to capture for assets in this category (e.g. RAM, Warranty Active).
                         </p>
 
                         {fieldDrafts.length > 0 && (
                             <ul className="mb-3 space-y-1">
                                 {fieldDrafts.map((field) => (
-                                    <li key={field.key} className="flex items-center justify-between rounded bg-white border px-2 py-1 text-sm">
-                                        <span>
-                                            {field.key} <span className="text-gray-400">({FIELD_TYPES.find((type) => type.value === field.valueType)?.label})</span>
+                                    <li key={field.key} className="flex items-center justify-between rounded-md border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-sm">
+                                        <span className="text-slate-700">
+                                            {field.key} <span className="text-slate-400">({FIELD_TYPES.find((type) => type.value === field.valueType)?.label})</span>
                                         </span>
                                         <button
                                             type="button"
                                             onClick={() => removeFieldDraft(field.key)}
-                                            className="text-red-500 hover:text-red-700 text-xs font-bold"
+                                            className="text-xs font-medium text-rose-600 hover:text-rose-700"
                                         >
                                             Remove
                                         </button>
@@ -228,48 +228,44 @@ function CategoryTab({ categories, refresh }) {
                                 onKeyDown={(event) => {
                                     if (event.key === 'Enter') { event.preventDefault(); addFieldDraft(); }
                                 }}
-                                className="flex-1 p-2 border rounded text-sm"
+                                className="field-input flex-1"
                                 placeholder="Field name, e.g. RAM"
                             />
                             <select
                                 value={fieldType}
                                 onChange={(event) => setFieldType(event.target.value)}
-                                className="p-2 border rounded text-sm bg-white"
+                                className="field-input !w-auto"
                             >
                                 {FIELD_TYPES.map((type) => <option key={type.value} value={type.value}>{type.label}</option>)}
                             </select>
                         </div>
-                        <button
-                            type="button"
-                            onClick={addFieldDraft}
-                            className="mt-2 w-full border border-blue-600 text-blue-600 font-semibold py-1.5 rounded hover:bg-blue-50 text-sm"
-                        >
+                        <button type="button" onClick={addFieldDraft} className="btn-secondary mt-2 w-full !text-brand-700">
                             + Add field
                         </button>
                     </div>
 
-                    <button type="submit" className="w-full bg-blue-600 text-white font-bold py-2 rounded hover:bg-blue-700">Create</button>
+                    <button type="submit" className="btn-primary w-full">Create</button>
                 </form>
             </div>
 
             <div className="md:col-span-2">
-                <h3 className="font-bold mb-4 text-lg">Asset Categories</h3>
-                <div className="grid grid-cols-2 gap-4">
+                <h3 className="mb-3 text-sm font-semibold text-slate-900">Asset categories</h3>
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                     {categories.length === 0 ? (
-                        <div className="col-span-2 p-4 text-center text-gray-500 border rounded">No categories found.</div>
+                        <div className="card col-span-2 p-8 text-center text-sm text-slate-500">No categories found.</div>
                     ) : (
                         categories.map(cat => (
-                            <div key={cat._id} className="border p-4 rounded shadow-sm bg-white hover:border-blue-400">
-                                <div className="flex justify-between items-center">
-                                    <span className="font-bold text-gray-700">{cat.name}</span>
-                                    <span className="text-xs bg-gray-200 px-2 py-1 rounded text-gray-600">
-                                        {cat.customFields?.length || 0} Field{cat.customFields?.length === 1 ? '' : 's'}
+                            <div key={cat._id} className="card p-4 transition-colors hover:border-brand-300">
+                                <div className="flex items-center justify-between">
+                                    <span className="font-semibold text-slate-800">{cat.name}</span>
+                                    <span className="rounded-md bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600">
+                                        {cat.customFields?.length || 0} field{cat.customFields?.length === 1 ? '' : 's'}
                                     </span>
                                 </div>
                                 {cat.customFields?.length > 0 && (
                                     <ul className="mt-2 space-y-0.5">
                                         {cat.customFields.map((field) => (
-                                            <li key={field.key} className="text-xs text-gray-500">
+                                            <li key={field.key} className="text-xs text-slate-500">
                                                 {field.key} · {FIELD_TYPES.find((type) => type.value === field.valueType)?.label || field.valueType}
                                             </li>
                                         ))}
@@ -283,6 +279,7 @@ function CategoryTab({ categories, refresh }) {
         </div>
     );
 }
+
 function EmployeeTab({ departments }) {
     const [users, setUsers] = useState([]);
 
@@ -322,25 +319,25 @@ function EmployeeTab({ departments }) {
 
     return (
         <div>
-            <h3 className="font-bold mb-4 text-lg">Employee Directory</h3>
-            <div className="overflow-x-auto border rounded shadow-sm">
-                <table className="w-full text-left bg-white">
-                    <thead className="bg-gray-100 border-b">
+            <h3 className="mb-3 text-sm font-semibold text-slate-900">Employee directory</h3>
+            <div className="card overflow-x-auto">
+                <table className="w-full text-left text-sm">
+                    <thead className="bg-slate-50">
                         <tr>
-                            <th className="p-3">Name</th>
-                            <th className="p-3">Email</th>
-                            <th className="p-3">Role</th>
-                            <th className="p-3">Department</th>
+                            <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-slate-500">Name</th>
+                            <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-slate-500">Email</th>
+                            <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-slate-500">Role</th>
+                            <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-slate-500">Department</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody className="divide-y divide-slate-100">
                         {users.map(user => (
-                            <tr key={user._id} className="border-b hover:bg-gray-50">
-                                <td className="p-3 font-medium">{user.name}</td>
-                                <td className="p-3 text-sm text-gray-600">{user.email}</td>
-                                <td className="p-3">
+                            <tr key={user._id} className="hover:bg-slate-50/80">
+                                <td className="px-4 py-3 font-medium text-slate-800">{user.name}</td>
+                                <td className="px-4 py-3 text-slate-500">{user.email}</td>
+                                <td className="px-4 py-3">
                                     <select
-                                        className="p-1 border rounded text-sm bg-gray-50"
+                                        className="field-input !w-auto py-1.5"
                                         value={user.role}
                                         onChange={(e) => handleRoleChange(user._id, e.target.value)}
                                     >
@@ -351,9 +348,9 @@ function EmployeeTab({ departments }) {
                                         <option value="None">None</option>
                                     </select>
                                 </td>
-                                <td className="p-3">
+                                <td className="px-4 py-3">
                                     <select
-                                        className="p-1 border rounded text-sm bg-gray-50"
+                                        className="field-input !w-auto py-1.5"
                                         value={user.department?._id || ''}
                                         onChange={(e) => handleDeptChange(user._id, e.target.value)}
                                     >

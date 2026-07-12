@@ -2,9 +2,10 @@ import { useForm } from 'react-hook-form';
 import { useNavigate, Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import api from '../api/axiosInstance';
+import AuthCard from '../components/common/AuthCard';
 
 export default function Signup() {
-    const { register, handleSubmit, formState: { errors } } = useForm();
+    const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm();
     const navigate = useNavigate();
 
     const onSubmit = async (data) => {
@@ -20,61 +21,57 @@ export default function Signup() {
     };
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-gray-50">
-            <div className="w-full max-w-md p-8 space-y-6 bg-white rounded shadow-md">
-                <h2 className="text-2xl font-bold text-center">Join AssetFlow</h2>
+        <AuthCard
+            title="Create your account"
+            footer={<>Already have an account? <Link to="/login" className="font-medium text-brand-700 hover:text-brand-800">Log in</Link></>}
+        >
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                <div>
+                    <label className="field-label">Full name</label>
+                    <input
+                        {...register('name', { required: 'Name is required' })}
+                        className="field-input"
+                        placeholder="John Doe"
+                    />
+                    {errors.name && <p className="field-error">{errors.name.message}</p>}
+                </div>
 
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                    <div>
-                        <label className="block mb-1 font-medium">Full Name</label>
-                        <input
-                            {...register('name', { required: 'Name is required' })}
-                            className="w-full p-2 border rounded focus:outline-blue-500"
-                            placeholder="John Doe"
-                        />
-                        {errors.name && <span className="text-sm text-red-500">{errors.name.message}</span>}
-                    </div>
+                <div>
+                    <label className="field-label">Email</label>
+                    <input
+                        type="email"
+                        {...register('email', { required: 'Email is required' })}
+                        className="field-input"
+                        placeholder="john@example.com"
+                    />
+                    {errors.email && <p className="field-error">{errors.email.message}</p>}
+                </div>
 
-                    <div>
-                        <label className="block mb-1 font-medium">Email</label>
-                        <input
-                            type="email"
-                            {...register('email', { required: 'Email is required' })}
-                            className="w-full p-2 border rounded focus:outline-blue-500"
-                            placeholder="john@example.com"
-                        />
-                        {errors.email && <span className="text-sm text-red-500">{errors.email.message}</span>}
-                    </div>
+                <div>
+                    <label className="field-label">Password</label>
+                    <input
+                        type="password"
+                        {...register('password', {
+                            required: 'Password is required',
+                            pattern: {
+                                value: /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
+                                message: 'Must be 8+ characters with a letter, a number, and a special character (@$!%*#?&).',
+                            },
+                        })}
+                        className="field-input"
+                        placeholder="••••••••"
+                    />
+                    {errors.password ? (
+                        <p className="field-error">{errors.password.message}</p>
+                    ) : (
+                        <p className="mt-1 text-xs text-slate-400">8+ characters, with a letter, a number, and a special character.</p>
+                    )}
+                </div>
 
-                    <div>
-                        <label className="block mb-1 font-medium">Password</label>
-                        <input
-                            type="password"
-                            {...register('password', {
-                                required: 'Password is required',
-                                pattern: {
-                                    value: /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
-                                    message: 'Must be 8+ characters with a letter, a number, and a special character (@$!%*#?&).',
-                                },
-                            })}
-                            className="w-full p-2 border rounded focus:outline-blue-500"
-                            placeholder="••••••••"
-                        />
-                        {errors.password ? (
-                            <span className="text-sm text-red-500">{errors.password.message}</span>
-                        ) : (
-                            <span className="text-xs text-gray-500">8+ characters, with a letter, a number, and a special character.</span>
-                        )}
-                    </div>
-
-                    <button type="submit" className="w-full p-2 font-bold text-white bg-blue-600 rounded hover:bg-blue-700">
-                        Sign Up
-                    </button>
-                </form>
-                <p className="text-center text-sm">
-                    Already have an account? <Link to="/login" className="text-blue-600 hover:underline">Log in</Link>
-                </p>
-            </div>
-        </div>
+                <button type="submit" disabled={isSubmitting} className="btn-primary w-full">
+                    {isSubmitting ? 'Creating account…' : 'Sign up'}
+                </button>
+            </form>
+        </AuthCard>
     );
 }

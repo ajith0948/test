@@ -13,8 +13,7 @@ const initialForm = {
     isShared: false,
 };
 
-const inputClass =
-    'mt-1.5 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500';
+const inputClass = 'field-input mt-1.5';
 
 function Field({ label, hint, required, children }) {
     return (
@@ -137,7 +136,7 @@ export default function AssetForm({ onCreated, onCancel }) {
             </div>
 
             {categoryFields.length > 0 && (
-                <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                <div className="rounded-md border border-slate-200 bg-slate-50 p-4">
                     <p className="mb-3 text-sm font-semibold text-slate-700">{selectedCategory.name} details</p>
                     <div className="grid gap-4 md:grid-cols-2">
                         {categoryFields.map((field) => (
@@ -146,7 +145,7 @@ export default function AssetForm({ onCreated, onCancel }) {
                                     <span className="mt-1.5 flex items-center gap-2 text-sm font-normal text-slate-700">
                                         <input
                                             type="checkbox"
-                                            className="h-4 w-4 accent-indigo-600"
+                                            className="h-4 w-4 accent-brand-700"
                                             checked={Boolean(customFieldValues[field.key])}
                                             onChange={updateCustomField(field.key, 'flag')}
                                         />
@@ -166,12 +165,12 @@ export default function AssetForm({ onCreated, onCancel }) {
                 </div>
             )}
 
-            <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-700">
-                <input className="h-4 w-4 accent-indigo-600" type="checkbox" name="isShared" checked={form.isShared} onChange={update} />
+            <label className="flex cursor-pointer items-center gap-3 rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-700">
+                <input className="h-4 w-4 accent-brand-700" type="checkbox" name="isShared" checked={form.isShared} onChange={update} />
                 Make this asset a shared, bookable resource
             </label>
 
-            <label className="block cursor-pointer rounded-xl border border-dashed border-slate-300 p-5 text-center text-sm text-slate-500 transition hover:border-indigo-400 hover:bg-indigo-50/50">
+            <label className="block cursor-pointer rounded-md border border-dashed border-slate-300 p-5 text-center text-sm text-slate-500 transition hover:border-brand-400 hover:bg-brand-50/50">
                 <span className="font-medium text-slate-700">Add photos or documents</span><br />
                 Up to 3 files, 10 MB each
                 <input
@@ -187,14 +186,10 @@ export default function AssetForm({ onCreated, onCancel }) {
             {error && <p className="rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700">{error}</p>}
 
             <div className="flex justify-end gap-3 border-t border-slate-100 pt-5">
-                <button type="button" className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50" onClick={onCancel}>
+                <button type="button" className="btn-secondary" onClick={onCancel}>
                     Cancel
                 </button>
-                <button
-                    type="submit"
-                    disabled={submitting}
-                    className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-60"
-                >
+                <button type="submit" disabled={submitting} className="btn-primary">
                     {submitting ? 'Registering…' : 'Register asset'}
                 </button>
             </div>

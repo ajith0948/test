@@ -7,8 +7,7 @@ const emptyManagerTransfer = { assetId: '', requestedBy: '', recipientType: 'emp
 const emptySelfTransfer = { assetId: '', reason: '' };
 const emptyAllocationRequest = { assetId: '', recipientType: 'self', reason: '' };
 
-const inputClass =
-    'mt-1.5 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500';
+const inputClass = 'field-input mt-1.5';
 
 function Field({ label, required, hint, children }) {
     return (
@@ -22,18 +21,18 @@ function Field({ label, required, hint, children }) {
 
 function Card({ title, children }) {
     return (
-        <div className="rounded-xl border border-slate-200 bg-white p-5">
-            {title && <h3 className="text-base font-bold text-slate-900">{title}</h3>}
-            <div className="mt-5 space-y-4">{children}</div>
+        <div className="card p-5">
+            {title && <h3 className="text-sm font-semibold text-slate-900">{title}</h3>}
+            <div className="mt-4 space-y-4">{children}</div>
         </div>
     );
 }
 
 function ListCard({ title, children, empty }) {
     return (
-        <div className="rounded-xl border border-slate-200 bg-white">
-            <div className="border-b border-slate-100 px-5 py-4">
-                <h3 className="font-bold text-slate-900">{title}</h3>
+        <div className="card">
+            <div className="border-b border-slate-100 px-5 py-3.5">
+                <h3 className="text-sm font-semibold text-slate-900">{title}</h3>
             </div>
             {children}
             {empty}
@@ -44,23 +43,23 @@ function ListCard({ title, children, empty }) {
 function EmptyState({ title, text }) {
     return (
         <div className="px-5 py-10 text-center">
-            <p className="font-medium text-slate-700">{title}</p>
+            <p className="text-sm font-medium text-slate-700">{title}</p>
             <p className="mt-1 text-sm text-slate-500">{text}</p>
         </div>
     );
 }
 
 function Row({ children }) {
-    return <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 px-5 py-4 last:border-0">{children}</div>;
+    return <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 px-5 py-3.5 last:border-0">{children}</div>;
 }
 
 function ReviewButtons({ onReject, onApprove, approveLabel = 'Approve' }) {
     return (
         <div className="flex gap-2">
-            <button type="button" className="rounded-lg border border-rose-200 px-3 py-1.5 text-sm font-medium text-rose-700 hover:bg-rose-50" onClick={onReject}>
+            <button type="button" className="btn-danger !px-3 !py-1.5" onClick={onReject}>
                 Reject
             </button>
-            <button type="button" className="rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-700" onClick={onApprove}>
+            <button type="button" className="btn-primary !px-3 !py-1.5" onClick={onApprove}>
                 {approveLabel}
             </button>
         </div>
@@ -331,14 +330,14 @@ export default function AllocationTransfer() {
     return (
         <div>
             <div className="mb-6">
-                <p className="text-xs font-semibold uppercase tracking-wide text-indigo-600">{copy.eyebrow}</p>
-                <h1 className="text-2xl font-bold text-slate-900">Allocation &amp; transfer</h1>
-                <p className="mt-1 text-sm text-slate-500">{copy.subtitle}</p>
+                <p className="page-eyebrow">{copy.eyebrow}</p>
+                <h1 className="page-title">Allocation &amp; transfer</h1>
+                <p className="page-subtitle">{copy.subtitle}</p>
                 <p className="mt-1 text-xs text-slate-400">Signed in as {role}</p>
             </div>
 
-            {notice && <div className="mb-5 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">{notice}</div>}
-            {error && <div className="mb-5 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">{error}</div>}
+            {notice && <div className="mb-5 rounded-md border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">{notice}</div>}
+            {error && <div className="mb-5 rounded-md border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">{error}</div>}
 
             {/* Admin / Asset Manager: allocate assets + see everything they hold out */}
             {isManager && (
@@ -365,7 +364,7 @@ export default function AllocationTransfer() {
                             <Field label="Expected return date">
                                 <input className={inputClass} name="expectedReturnDate" type="date" value={allocationForm.expectedReturnDate} onChange={updateAllocationForm} />
                             </Field>
-                            <button type="submit" disabled={submitting} className="w-full rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-60">
+                            <button type="submit" disabled={submitting} className="btn-primary w-full">
                                 {submitting ? 'Allocating…' : 'Confirm allocation'}
                             </button>
                         </form>
@@ -385,7 +384,7 @@ export default function AllocationTransfer() {
                                         </p>
                                         {overdue && <p className="mt-1 text-xs font-medium text-rose-600">Overdue return</p>}
                                     </div>
-                                    <button type="button" className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50" onClick={() => returnNow(allocation._id)}>
+                                    <button type="button" className="btn-secondary !px-3 !py-1.5" onClick={() => returnNow(allocation._id)}>
                                         Return now
                                     </button>
                                 </Row>
@@ -421,7 +420,7 @@ export default function AllocationTransfer() {
                                 <Field label="Reason">
                                     <textarea className={inputClass} name="reason" value={allocationRequestForm.reason} onChange={updateAllocationRequestForm} rows="3" placeholder="Why do you need this asset?" />
                                 </Field>
-                                <button type="submit" className="w-full rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700">
+                                <button type="submit" className="btn-primary w-full">
                                     Submit for approval
                                 </button>
                             </form>
@@ -440,7 +439,7 @@ export default function AllocationTransfer() {
                                 <Field label="Reason">
                                     <textarea className={inputClass} name="reason" value={selfTransferForm.reason} onChange={updateSelfTransferForm} rows="3" placeholder="Why do you need this asset?" />
                                 </Field>
-                                <button type="submit" className="w-full rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700">
+                                <button type="submit" className="btn-primary w-full">
                                     Submit for approval
                                 </button>
                             </form>
@@ -459,7 +458,7 @@ export default function AllocationTransfer() {
                                                 <p className="mt-1 text-sm text-slate-500">Due {new Date(allocation.expectedReturnDate).toLocaleDateString()}</p>
                                             )}
                                         </div>
-                                        <button type="button" className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50" onClick={() => requestReturn(allocation._id)}>
+                                        <button type="button" className="btn-secondary !px-3 !py-1.5" onClick={() => requestReturn(allocation._id)}>
                                             Request return
                                         </button>
                                     </Row>
@@ -532,7 +531,7 @@ export default function AllocationTransfer() {
                                 </Field>
                             </div>
                             <div className="md:col-span-2">
-                                <button type="submit" className="w-full rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 md:w-auto md:px-6">
+                                <button type="submit" className="btn-primary md:w-auto md:px-6">
                                     Submit for approval
                                 </button>
                             </div>

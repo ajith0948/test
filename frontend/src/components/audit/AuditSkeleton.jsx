@@ -1,7 +1,7 @@
 export default function AuditSkeleton() {
   return (
     <div className="animate-pulse space-y-4">
-      <div className="rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-sm">
+      <div className="card overflow-hidden">
         <div className="h-14 bg-slate-50 border-b border-slate-100"></div>
         {[...Array(4)].map((_, i) => (
           <div key={i} className="h-16 border-b border-slate-100 px-6 flex items-center justify-between">

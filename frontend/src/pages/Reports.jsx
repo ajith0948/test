@@ -61,24 +61,19 @@ export default function Reports() {
 
   return (
     <div className="max-w-7xl mx-auto">
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900">Reports & Analytics</h1>
-          <p className="text-slate-500 font-medium mt-1">Operational insights and summaries</p>
-        </div>
+      <div className="mb-6">
+        <p className="page-eyebrow">Insights</p>
+        <h1 className="page-title">Reports &amp; analytics</h1>
+        <p className="page-subtitle">Operational insights and summaries.</p>
       </div>
 
       <ReportTabs activeTab={activeTab} onTabChange={handleTabChange} />
 
       {error ? (
-        <div className="bg-rose-50 border border-rose-200 rounded-2xl p-8 text-center shadow-sm" role="alert">
-          <p className="text-rose-600 font-medium mb-6">{error}</p>
-          <button
-            onClick={() => fetchReport(activeTab, true)}
-            disabled={retrying}
-            className="px-5 py-2.5 bg-rose-600 text-white font-semibold rounded-xl hover:bg-rose-700 transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {retrying ? 'Retrying…' : 'Retry Connection'}
+        <div className="card border-rose-200 bg-rose-50 p-8 text-center" role="alert">
+          <p className="mb-4 text-sm font-medium text-rose-700">{error}</p>
+          <button onClick={() => fetchReport(activeTab, true)} disabled={retrying} className="btn-danger-solid">
+            {retrying ? 'Retrying…' : 'Retry connection'}
           </button>
         </div>
       ) : loading ? (

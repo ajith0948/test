@@ -92,40 +92,38 @@ export default function Notifications() {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="flex items-center justify-between mb-8">
+      <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900">Notifications</h1>
-          <p className="text-slate-500 font-medium mt-1">Alerts and recent activities</p>
+          <p className="page-eyebrow">Alerts</p>
+          <h1 className="page-title">Notifications</h1>
+          <p className="page-subtitle">Alerts and recent activities.</p>
         </div>
         {hasUnread && !loading && !error && (
           <button
             onClick={handleMarkAllAsRead}
             disabled={processingAll || processingId !== null}
-            className="text-sm font-semibold text-indigo-600 hover:text-indigo-800 transition-colors focus:outline-none px-4 py-2 bg-indigo-50 hover:bg-indigo-100 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed"
+            className="btn-secondary"
             aria-label="Mark all notifications as read"
           >
-            {processingAll ? 'Updating...' : 'Mark all as read'}
+            {processingAll ? 'Updating…' : 'Mark all as read'}
           </button>
         )}
       </div>
 
       {actionError && (
-        <div className="mb-6 bg-rose-50 border border-rose-200 text-rose-600 p-4 rounded-2xl flex justify-between items-center shadow-sm" role="alert">
+        <div className="mb-5 flex items-center justify-between rounded-md border border-rose-200 bg-rose-50 p-4 text-rose-700" role="alert">
           <span className="text-sm font-medium">{actionError}</span>
-          <button onClick={() => setActionError(null)} className="text-rose-500 hover:text-rose-700 focus:outline-none transition-colors" aria-label="Dismiss alert">
-            <span className="text-2xl font-bold">&times;</span>
+          <button onClick={() => setActionError(null)} className="text-rose-500 hover:text-rose-700 focus:outline-none" aria-label="Dismiss alert">
+            <span className="text-lg font-semibold">&times;</span>
           </button>
         </div>
       )}
 
       {error ? (
-        <div className="bg-rose-50 border border-rose-200 rounded-2xl p-8 text-center shadow-sm" role="alert">
-          <p className="text-rose-600 font-medium mb-6">{error}</p>
-          <button
-            onClick={fetchNotifications}
-            className="px-5 py-2.5 bg-rose-600 text-white font-semibold rounded-xl hover:bg-rose-700 transition-all shadow-sm"
-          >
-            Retry Connection
+        <div className="card border-rose-200 bg-rose-50 p-8 text-center" role="alert">
+          <p className="mb-4 text-sm font-medium text-rose-700">{error}</p>
+          <button onClick={fetchNotifications} className="btn-danger-solid">
+            Retry connection
           </button>
         </div>
       ) : loading ? (

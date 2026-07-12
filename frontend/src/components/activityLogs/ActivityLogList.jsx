@@ -4,14 +4,14 @@ import { UI_MESSAGES } from '../../utils/constants';
 export default function ActivityLogList({ logs }) {
   if (!logs || logs.length === 0) {
     return (
-      <div className="bg-white rounded-2xl border border-slate-200 p-8 text-center text-slate-500 font-medium shadow-sm">
+      <div className="card p-8 text-center text-sm font-medium text-slate-500">
         {UI_MESSAGES.ACTIVITY_LOGS_EMPTY}
       </div>
     );
   }
 
   return (
-    <div role="list" className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+    <div role="list" className="card overflow-hidden">
       {logs.map((log, index) => (
         <ActivityLogItem
           key={log._id}

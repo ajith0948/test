@@ -1,7 +1,7 @@
 export default function ReportSkeleton() {
   return (
     <div className="animate-pulse space-y-6">
-      <div className="space-y-4 bg-white border border-slate-200 shadow-sm rounded-2xl p-6">
+      <div className="space-y-4 card p-5">
         <div className="h-4 bg-slate-200 rounded w-1/6 mb-4"></div>
         {[...Array(5)].map((_, i) => (
           <div key={i} className="flex items-center space-x-4">
@@ -12,7 +12,7 @@ export default function ReportSkeleton() {
         ))}
       </div>
 
-      <div className="rounded-2xl border border-slate-200 shadow-sm bg-white overflow-hidden">
+      <div className="card overflow-hidden">
         <div className="h-14 bg-slate-50 border-b border-slate-100"></div>
         {[...Array(5)].map((_, i) => (
           <div key={i} className="h-14 border-b border-slate-100 px-6 flex items-center justify-between">

@@ -40,7 +40,8 @@ export default function Dashboard() {
   if (loading) {
     return (
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900 mb-8">Dashboard</h1>
+        <p className="page-eyebrow">Overview</p>
+        <h1 className="page-title !text-2xl mb-6">Dashboard</h1>
         <DashboardSkeleton />
       </div>
     );
@@ -49,14 +50,12 @@ export default function Dashboard() {
   if (error) {
     return (
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900 mb-8">Dashboard</h1>
-        <div className="bg-rose-50 border border-rose-200 rounded-2xl p-8 text-center shadow-sm">
-          <p className="text-rose-600 font-medium mb-6">{error}</p>
-          <button
-            onClick={fetchDashboardData}
-            className="px-5 py-2.5 bg-rose-600 text-white font-semibold rounded-xl hover:bg-rose-700 transition-all shadow-sm"
-          >
-            Retry Connection
+        <p className="page-eyebrow">Overview</p>
+        <h1 className="page-title !text-2xl mb-6">Dashboard</h1>
+        <div className="card border-rose-200 bg-rose-50 p-8 text-center">
+          <p className="mb-4 text-sm font-medium text-rose-700">{error}</p>
+          <button onClick={fetchDashboardData} className="btn-danger-solid">
+            Retry connection
           </button>
         </div>
       </div>
@@ -66,8 +65,9 @@ export default function Dashboard() {
   if (!data || !data.kpis) {
     return (
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900 mb-8">Dashboard</h1>
-        <div className="bg-white border border-slate-200 rounded-2xl p-16 text-center text-slate-500 shadow-sm font-medium">
+        <p className="page-eyebrow">Overview</p>
+        <h1 className="page-title !text-2xl mb-6">Dashboard</h1>
+        <div className="card p-16 text-center text-sm font-medium text-slate-500">
           {UI_MESSAGES.DASHBOARD_EMPTY}
         </div>
       </div>
@@ -78,20 +78,18 @@ export default function Dashboard() {
 
   return (
     <div className="max-w-7xl mx-auto">
-      <div className="flex items-center justify-between mb-8">
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900">Dashboard</h1>
-          <p className="text-slate-500 font-medium mt-1">Real-time asset intelligence</p>
+          <p className="page-eyebrow">Overview</p>
+          <h1 className="page-title !text-2xl">Dashboard</h1>
+          <p className="page-subtitle">Real-time asset intelligence</p>
         </div>
-        <button
-          onClick={fetchDashboardData}
-          className="px-5 py-2.5 bg-white border border-slate-200 text-slate-700 text-sm font-semibold rounded-xl hover:bg-slate-50 transition-all shadow-sm"
-        >
-          Refresh Data
+        <button onClick={fetchDashboardData} className="btn-secondary">
+          Refresh data
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-10">
+      <div className="grid grid-cols-1 gap-4 mb-8 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
         <KPICard title="Assets Available" value={kpis.assetsAvailable} />
         <KPICard title="Assets Allocated" value={kpis.assetsAllocated} />
         <KPICard title="Maintenance Today" value={kpis.maintenanceToday} urgent={kpis.maintenanceToday > 0} />
@@ -100,7 +98,7 @@ export default function Dashboard() {
       </div>
 
       <div>
-        <h2 className="text-xl font-bold tracking-tight text-slate-900 mb-5">Returns & Allocations</h2>
+        <h2 className="text-base font-semibold text-slate-900 mb-3">Returns & Allocations</h2>
         <ReturnsList returns={returns} />
       </div>
     </div>

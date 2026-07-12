@@ -141,41 +141,33 @@ export default function AssetAudit() {
 
   return (
     <div className="max-w-7xl mx-auto">
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900">Asset Audit</h1>
-          <p className="text-slate-500 font-medium mt-1">Manage physical asset verification cycles</p>
+          <p className="page-eyebrow">Compliance</p>
+          <h1 className="page-title">Asset audit</h1>
+          <p className="page-subtitle">Manage physical asset verification cycles.</p>
         </div>
         {canManageAudits && (
-          <button
-            onClick={handleCreateAudit}
-            className="px-5 py-2.5 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-700 transition-all shadow-sm"
-          >
-            Create Audit Cycle
+          <button onClick={handleCreateAudit} className="btn-primary">
+            Create audit cycle
           </button>
         )}
       </div>
 
       {actionError && (
-        <div className="mb-8 bg-amber-50 border border-amber-200 text-amber-800 px-6 py-4 rounded-2xl relative shadow-sm" role="alert">
-          <span className="block sm:inline font-medium">{actionError}</span>
-          <button
-            className="absolute top-0 bottom-0 right-0 px-6 py-4"
-            onClick={() => setActionError(null)}
-          >
-            <span className="text-amber-800 hover:text-amber-900 text-2xl font-bold transition-colors">&times;</span>
+        <div className="mb-6 relative rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800" role="alert">
+          <span className="font-medium">{actionError}</span>
+          <button className="absolute inset-y-0 right-0 px-4" onClick={() => setActionError(null)}>
+            <span className="text-lg font-semibold text-amber-700 hover:text-amber-900">&times;</span>
           </button>
         </div>
       )}
 
       {error ? (
-        <div className="bg-rose-50 border border-rose-200 rounded-2xl p-8 text-center shadow-sm" role="alert">
-          <p className="text-rose-600 font-medium mb-6">{error}</p>
-          <button
-            onClick={fetchAudits}
-            className="px-5 py-2.5 bg-rose-600 text-white font-semibold rounded-xl hover:bg-rose-700 transition-all shadow-sm"
-          >
-            Retry Connection
+        <div className="card border-rose-200 bg-rose-50 p-8 text-center" role="alert">
+          <p className="mb-4 text-sm font-medium text-rose-700">{error}</p>
+          <button onClick={fetchAudits} className="btn-danger-solid">
+            Retry connection
           </button>
         </div>
       ) : loading ? (

@@ -45,22 +45,23 @@ export default function ActivityLogs() {
 
   return (
     <div className="max-w-5xl mx-auto">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8">
+      <div className="mb-6 flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900">Activity Logs</h1>
-          <p className="text-slate-500 font-medium mt-1">Audit trail of actions performed within the system.</p>
+          <p className="page-eyebrow">Audit trail</p>
+          <h1 className="page-title">Activity logs</h1>
+          <p className="page-subtitle">Record of actions performed within the system.</p>
         </div>
       </div>
 
-      <div className="mb-8 flex space-x-2 overflow-x-auto pb-2">
+      <div className="mb-6 flex space-x-2 overflow-x-auto pb-1">
         {Object.values(ACTIVITY_MODULES).map((moduleName) => (
           <button
             key={moduleName}
             onClick={() => handleFilterChange(moduleName)}
-            className={`px-5 py-2 text-sm font-semibold rounded-lg transition-all whitespace-nowrap focus:outline-none ${
+            className={`whitespace-nowrap rounded-md px-3.5 py-1.5 text-sm font-medium transition-colors focus:outline-none ${
               activeFilter === moduleName
-                ? 'bg-slate-900 text-white shadow-sm'
-                : 'bg-white text-slate-600 hover:text-slate-900 hover:bg-slate-50 border border-slate-200'
+                ? 'bg-slate-900 text-white'
+                : 'border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900'
             }`}
           >
             {moduleName}
@@ -69,13 +70,10 @@ export default function ActivityLogs() {
       </div>
 
       {error ? (
-        <div className="bg-rose-50 border border-rose-200 rounded-2xl p-8 text-center shadow-sm" role="alert">
-          <p className="text-rose-600 font-medium mb-6">{error}</p>
-          <button
-            onClick={() => fetchLogs(activeFilter)}
-            className="px-5 py-2.5 bg-rose-600 text-white font-semibold rounded-xl hover:bg-rose-700 transition-all shadow-sm"
-          >
-            Retry Connection
+        <div className="card border-rose-200 bg-rose-50 p-8 text-center" role="alert">
+          <p className="mb-4 text-sm font-medium text-rose-700">{error}</p>
+          <button onClick={() => fetchLogs(activeFilter)} className="btn-danger-solid">
+            Retry connection
           </button>
         </div>
       ) : loading ? (

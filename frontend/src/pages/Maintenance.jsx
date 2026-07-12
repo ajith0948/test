@@ -8,8 +8,7 @@ import StatusBadge from '../components/common/StatusBadge';
 const emptyForm = { assetId: '', issueDescription: '', priority: 'Medium' };
 const PRIORITIES = ['Low', 'Medium', 'High', 'Critical'];
 
-const inputClass =
-    'mt-1.5 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500';
+const inputClass = 'field-input mt-1.5';
 
 function Field({ label, required, children }) {
     return (
@@ -133,16 +132,16 @@ export default function Maintenance() {
                 <div className="flex gap-2">
                     {request.status === 'Pending' && canReview && (
                         <>
-                            <button type="button" className="rounded-lg border border-rose-200 px-3 py-1.5 text-xs font-medium text-rose-700 hover:bg-rose-50" onClick={() => review(request._id, 'Rejected')}>
+                            <button type="button" className="btn-danger !px-3 !py-1.5 !text-xs" onClick={() => review(request._id, 'Rejected')}>
                                 Reject
                             </button>
-                            <button type="button" className="rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-indigo-700" onClick={() => review(request._id, 'Approved')}>
+                            <button type="button" className="btn-primary !px-3 !py-1.5 !text-xs" onClick={() => review(request._id, 'Approved')}>
                                 Approve
                             </button>
                         </>
                     )}
                     {['Approved', 'TechnicianAssigned', 'InProgress'].includes(request.status) && canResolve && (
-                        <button type="button" className="rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-emerald-700" onClick={() => resolve(request._id)}>
+                        <button type="button" className="btn !px-3 !py-1.5 !text-xs bg-emerald-600 text-white hover:bg-emerald-700" onClick={() => resolve(request._id)}>
                             Mark resolved
                         </button>
                     )}
@@ -155,21 +154,17 @@ export default function Maintenance() {
         <div>
             <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
                 <div>
-                    <p className="text-xs font-semibold uppercase tracking-wide text-indigo-600">Keep assets in service</p>
-                    <h1 className="text-2xl font-bold text-slate-900">Maintenance management</h1>
-                    <p className="mt-1 text-sm text-slate-500">Raise issues, approve repairs, and track resolution.</p>
+                    <p className="page-eyebrow">Keep assets in service</p>
+                    <h1 className="page-title">Maintenance management</h1>
+                    <p className="page-subtitle">Raise issues, approve repairs, and track resolution.</p>
                 </div>
-                <button
-                    type="button"
-                    className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
-                    onClick={() => setShowForm(true)}
-                >
+                <button type="button" className="btn-primary" onClick={() => setShowForm(true)}>
                     + Raise request
                 </button>
             </div>
 
-            {notice && <div className="mb-5 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">{notice}</div>}
-            {error && <div className="mb-5 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">{error}</div>}
+            {notice && <div className="mb-5 rounded-md border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">{notice}</div>}
+            {error && <div className="mb-5 rounded-md border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">{error}</div>}
 
             <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
                 <KPICard label="Total requests" value={kpis.total} />
@@ -204,12 +199,12 @@ export default function Maintenance() {
                         <Field label="Issue description" required>
                             <textarea className={inputClass} name="issueDescription" value={form.issueDescription} onChange={update} rows="4" required />
                         </Field>
-                        {error && <p className="rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700">{error}</p>}
+                        {error && <p className="rounded-md bg-rose-50 px-3 py-2 text-sm text-rose-700">{error}</p>}
                         <div className="flex justify-end gap-3 border-t border-slate-100 pt-4">
-                            <button type="button" className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50" onClick={() => setShowForm(false)}>
+                            <button type="button" className="btn-secondary" onClick={() => setShowForm(false)}>
                                 Cancel
                             </button>
-                            <button type="submit" disabled={submitting} className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-60">
+                            <button type="submit" disabled={submitting} className="btn-primary">
                                 {submitting ? 'Submitting…' : 'Submit request'}
                             </button>
                         </div>

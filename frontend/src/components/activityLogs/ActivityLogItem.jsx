@@ -4,17 +4,17 @@ import { ACTIVITY_MODULES } from '../../utils/constants';
 function getModuleIconStyles(module) {
   switch (module) {
     case ACTIVITY_MODULES.ASSET:
-      return { bg: 'bg-green-100', text: 'text-green-600', icon: 'A' };
+      return { bg: 'bg-emerald-50', text: 'text-emerald-700', icon: 'A' };
     case ACTIVITY_MODULES.ALLOCATION:
-      return { bg: 'bg-blue-100', text: 'text-blue-600', icon: 'T' };
+      return { bg: 'bg-brand-50', text: 'text-brand-700', icon: 'T' };
     case ACTIVITY_MODULES.BOOKING:
-      return { bg: 'bg-purple-100', text: 'text-purple-600', icon: 'B' };
+      return { bg: 'bg-violet-50', text: 'text-violet-700', icon: 'B' };
     case ACTIVITY_MODULES.MAINTENANCE:
-      return { bg: 'bg-orange-100', text: 'text-orange-600', icon: 'M' };
+      return { bg: 'bg-orange-50', text: 'text-orange-700', icon: 'M' };
     case ACTIVITY_MODULES.AUDIT:
-      return { bg: 'bg-indigo-100', text: 'text-indigo-600', icon: 'R' };
+      return { bg: 'bg-brand-50', text: 'text-brand-700', icon: 'R' };
     default:
-      return { bg: 'bg-gray-100', text: 'text-gray-600', icon: 'C' };
+      return { bg: 'bg-slate-100', text: 'text-slate-600', icon: 'C' };
   }
 }
 
@@ -23,25 +23,22 @@ export default function ActivityLogItem({ log, isLast }) {
   const styles = getModuleIconStyles(module);
 
   return (
-    <div role="listitem" className="p-6 flex items-start space-x-5 relative bg-white transition-colors hover:bg-slate-50 border-b border-slate-100 last:border-0">
-      {!isLast && (
-        <div className="absolute left-12 top-16 bottom-0 w-0.5 bg-slate-200" aria-hidden="true"></div>
-      )}
+    <div role="listitem" className="relative flex items-start gap-3.5 border-b border-slate-100 bg-white p-4 transition-colors last:border-0 hover:bg-slate-50/80">
+      {!isLast && <div className="absolute bottom-0 left-[35px] top-12 w-px bg-slate-100" aria-hidden="true"></div>}
 
-      <div className={`h-12 w-12 rounded-2xl flex items-center justify-center flex-shrink-0 z-10 shadow-sm ${styles.bg} ${styles.text}`}>
-        <span className="font-bold text-lg" aria-hidden="true">{styles.icon}</span>
+      <div className={`z-10 flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-md ring-1 ring-inset ring-black/5 ${styles.bg} ${styles.text}`}>
+        <span className="text-sm font-semibold" aria-hidden="true">{styles.icon}</span>
       </div>
 
-      <div className="flex-1 min-w-0 pt-1">
+      <div className="min-w-0 flex-1 pt-0.5">
         <p className="text-sm text-slate-700">
-          <span className="font-bold text-slate-900">{user?.name || 'Unknown User'}</span>
-          {' '}
-          <span className="font-medium text-slate-600">{action}</span>
+          <span className="font-semibold text-slate-900">{user?.name || 'Unknown User'}</span>{' '}
+          <span className="text-slate-600">{action}</span>
         </p>
-        <div className="mt-1.5 flex items-center text-xs text-slate-400 space-x-2">
-          <span className="font-medium">{formatTimeAgo(createdAt)}</span>
+        <div className="mt-1 flex items-center gap-2 text-xs text-slate-400">
+          <span>{formatTimeAgo(createdAt)}</span>
           <span aria-hidden="true">&bull;</span>
-          <span className="font-bold uppercase tracking-wider">{module}</span>
+          <span className="font-medium uppercase tracking-wide">{module}</span>
         </div>
       </div>
     </div>

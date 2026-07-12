@@ -1,17 +1,15 @@
 export default function KPICard({ title, value, icon, urgent }) {
   return (
-    <div className={`p-6 rounded-2xl bg-white shadow-sm border flex flex-col justify-between ${urgent ? 'border-rose-200 bg-rose-50/30' : 'border-slate-200'}`}>
-      <div className="flex justify-between items-start mb-4">
-        <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">{title}</p>
+    <div className={`card flex flex-col justify-between p-5 ${urgent ? 'border-rose-200 bg-rose-50/40' : ''}`}>
+      <div className="mb-3 flex items-start justify-between">
+        <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{title}</p>
         {icon && (
-          <div className={`p-2.5 rounded-xl ${urgent ? 'bg-rose-100 text-rose-600' : 'bg-indigo-50 text-indigo-600'}`}>
+          <div className={`rounded-md p-2 ${urgent ? 'bg-rose-100 text-rose-600' : 'bg-brand-50 text-brand-700'}`}>
             {icon}
           </div>
         )}
       </div>
-      <div>
-        <h3 className={`text-4xl font-bold tracking-tight ${urgent ? 'text-rose-700' : 'text-slate-900'}`}>{value}</h3>
-      </div>
+      <p className={`text-3xl font-semibold tracking-tight ${urgent ? 'text-rose-700' : 'text-slate-900'}`}>{value}</p>
     </div>
   );
 }
